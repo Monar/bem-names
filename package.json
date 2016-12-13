@@ -1,0 +1,31 @@
+{
+  "name": "bem-names",
+  "version": "0.0.1",
+  "description": "Simple generator of bem-like classNames inspired by classnames and bem-classname",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "mocha --compilers js:babel-register './test.js'",
+    "build": "webpack",
+    "lint": "eslint ."
+  },
+  "keywords": [
+    "bem",
+    "classname",
+    "react"
+  ],
+  "author": "Piotr Tomasz Monarski",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Monar/bem-names.git"
+  },
+  "devDependencies": {
+    "lodash": "^4.17.2",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.18.0",
+    "babel-register": "^6.18.0",
+    "chai": "^3.5.0",
+    "eslint": "^3.12.1",
+    "mocha": "^3.2.0",
+    "webpack": "^1.14.0"
+  }
+}
