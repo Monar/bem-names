@@ -1,4 +1,4 @@
-import { bemName, customBemName, bemNameFactory } from './bem-name';
+import { bemNames, customBemNames, bemNamesFactory } from './bem-names';
 
-export { bemNameFactory, bemName, customBemName };
-export default bemName;
+export { bemNamesFactory, bemNames, customBemNames };
+export default bemNames;

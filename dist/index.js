@@ -73,58 +73,58 @@
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_lodash__);
-/* harmony export (immutable) */ exports["a"] = bemNameFactory;
-/* harmony export (immutable) */ exports["b"] = bemName;
-/* harmony export (immutable) */ exports["c"] = customBemName;
+/* harmony export (immutable) */ exports["a"] = bemNamesFactory;
+/* harmony export (immutable) */ exports["b"] = bemNames;
+/* harmony export (immutable) */ exports["c"] = customBemNames;
 /* unused harmony export applyMods */
 /* unused harmony export parseModifier */
 /* unused harmony export extractModifier */
 
 
 const defaultSeparators = { element: '__', modifier: '--' };
-function bemNameFactory(
+function bemNamesFactory(
   block,
   states = {},
   separators = defaultSeparators
 ){
   const config = { block, states, separators };
   if (block === undefined) {
-    return (...args) => customBemName(config, ...args);
+    return (...args) => customBemNames(config, ...args);
   }
 
-  return (...args) => customBemName(config, block, ...args);
+  return (...args) => customBemNames(config, block, ...args);
 }
 
-function bemName(...args) {
+function bemNames(...args) {
   const config = { states: {}, separators: defaultSeparators };
-  return customBemName(config, ...args);
+  return customBemNames(config, ...args);
 }
 
-function customBemName(config, block, ...args) {
-  let bemName = block;
+function customBemNames(config, block, ...args) {
+  let bemNames = block;
 
   if (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_lodash__["isString"])(args[0])) {
-    bemName = block + config.separators.element + args[0];
-    return applyMods(config, bemName, args.slice(1));
+    bemNames = block + config.separators.element + args[0];
+    return applyMods(config, bemNames, args.slice(1));
   }
 
-  return applyMods(config, bemName, args);
+  return applyMods(config, bemNames, args);
 }
 
-function applyMods(config, bemName, modifiers) {
+function applyMods(config, bemNames, modifiers) {
   const flattenedModifiers =
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_lodash__["flatMap"])(modifiers, (mods) => extractModifier(mods));
   const parsedModifiers =
-    flattenedModifiers.map((mod) => parseModifier(config, bemName, mod));
-  return [bemName].concat(parsedModifiers).join(' ');
+    flattenedModifiers.map((mod) => parseModifier(config, bemNames, mod));
+  return [bemNames].concat(parsedModifiers).join(' ');
 }
 
-function parseModifier(config, bemName, modifier) {
+function parseModifier(config, bemNames, modifier) {
   if (modifier in config.states) {
     return config.states[modifier];
   }
 
-  return bemName + config.separators.modifier + modifier;
+  return bemNames + config.separators.modifier + modifier;
 }
 
 function extractModifier(modifiers) {
@@ -17270,15 +17270,15 @@ module.exports = function(module) {
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bem_name__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__bem_names__ = __webpack_require__(0);
 Object.defineProperty(exports, "__esModule", { value: true });
-/* harmony reexport (binding) */ __webpack_require__.d(exports, "bemNameFactory", function() { return __WEBPACK_IMPORTED_MODULE_0__bem_name__["a"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(exports, "bemName", function() { return __WEBPACK_IMPORTED_MODULE_0__bem_name__["b"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(exports, "customBemName", function() { return __WEBPACK_IMPORTED_MODULE_0__bem_name__["c"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(exports, "bemNamesFactory", function() { return __WEBPACK_IMPORTED_MODULE_0__bem_names__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(exports, "bemNames", function() { return __WEBPACK_IMPORTED_MODULE_0__bem_names__["b"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(exports, "customBemNames", function() { return __WEBPACK_IMPORTED_MODULE_0__bem_names__["c"]; });
 
 
 
-/* harmony default export */ exports["default"] = __WEBPACK_IMPORTED_MODULE_0__bem_name__["b" /* bemName */];
+/* harmony default export */ exports["default"] = __WEBPACK_IMPORTED_MODULE_0__bem_names__["b" /* bemNames */];
 
 
 /***/ }

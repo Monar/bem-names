@@ -1,49 +1,49 @@
 import { isString, flatMap } from 'lodash';
 
 const defaultSeparators = { element: '__', modifier: '--' };
-export function bemNameFactory(
+export function bemNamesFactory(
   block,
   states = {},
   separators = defaultSeparators
 ){
   const config = { block, states, separators };
   if (block === undefined) {
-    return (...args) => customBemName(config, ...args);
+    return (...args) => customBemNames(config, ...args);
   }
 
-  return (...args) => customBemName(config, block, ...args);
+  return (...args) => customBemNames(config, block, ...args);
 }
 
-export function bemName(...args) {
+export function bemNames(...args) {
   const config = { states: {}, separators: defaultSeparators };
-  return customBemName(config, ...args);
+  return customBemNames(config, ...args);
 }
 
-export  function customBemName(config, block, ...args) {
-  let bemName = block;
+export  function customBemNames(config, block, ...args) {
+  let bemNames = block;
 
   if (isString(args[0])) {
-    bemName = block + config.separators.element + args[0];
-    return applyMods(config, bemName, args.slice(1));
+    bemNames = block + config.separators.element + args[0];
+    return applyMods(config, bemNames, args.slice(1));
   }
 
-  return applyMods(config, bemName, args);
+  return applyMods(config, bemNames, args);
 }
 
-export function applyMods(config, bemName, modifiers) {
+export function applyMods(config, bemNames, modifiers) {
   const flattenedModifiers =
     flatMap(modifiers, (mods) => extractModifier(mods));
   const parsedModifiers =
-    flattenedModifiers.map((mod) => parseModifier(config, bemName, mod));
-  return [bemName].concat(parsedModifiers).join(' ');
+    flattenedModifiers.map((mod) => parseModifier(config, bemNames, mod));
+  return [bemNames].concat(parsedModifiers).join(' ');
 }
 
-export function parseModifier(config, bemName, modifier) {
+export function parseModifier(config, bemNames, modifier) {
   if (modifier in config.states) {
     return config.states[modifier];
   }
 
-  return bemName + config.separators.modifier + modifier;
+  return bemNames + config.separators.modifier + modifier;
 }
 
 export function extractModifier(modifiers) {

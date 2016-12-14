@@ -1,10 +1,11 @@
 {
   "name": "bem-names",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Simple generator of bem-like classNames inspired by classnames and bem-classname",
   "main": "dist/index.js",
   "scripts": {
     "test": "mocha --compilers js:babel-register './test.js'",
+    "publish": "npm run build; npm publish",
     "build": "webpack",
     "lint": "eslint ."
   },
@@ -20,11 +21,11 @@
     "url": "git@github.com:Monar/bem-names.git"
   },
   "devDependencies": {
-    "lodash": "^4.17.2",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.18.0",
     "babel-register": "^6.18.0",
     "chai": "^3.5.0",
     "eslint": "^3.12.1",
+    "lodash": "^4.17.2",
     "mocha": "^3.2.0",
     "webpack": "^2.1.0-beta.28"
   }

@@ -3,12 +3,12 @@
 import { assert } from 'chai';
 import {
   extractModifier,
-  bemNameFactory,
-  customBemName,
+  bemNamesFactory,
+  customBemNames,
   parseModifier,
   applyMods,
-  bemName,
-} from './bem-name';
+  bemNames,
+} from './bem-names';
 
 
 describe('extractModifier', function() {
@@ -35,25 +35,25 @@ describe('extractModifier', function() {
 describe('parseModifier', function() {
 
   it('should create proper bem modifier', () => {
-    const bemName = 'block__element';
+    const bemNames = 'block__element';
     const modifier = 'super';
     const config = {
       states: {},
       separators: { element: '__', modifier: '--' },
     };
-    const parsedModifier = parseModifier(config, bemName, modifier);
+    const parsedModifier = parseModifier(config, bemNames, modifier);
 
     assert.equal(parsedModifier, 'block__element--super');
   });
 
   it('should return string based on states map', () => {
-    const bemName = 'block__element';
+    const bemNames = 'block__element';
     const modifier = 'ok';
     const config = {
       states: { ok: 'is-ok' },
       separators: { element: '__', modifier: '--' },
     };
-    const parsedModifier = parseModifier(config, bemName, modifier);
+    const parsedModifier = parseModifier(config, bemNames, modifier);
 
     assert.equal(parsedModifier, 'is-ok');
   });
@@ -62,20 +62,20 @@ describe('parseModifier', function() {
 
 describe('applyMods', function() {
 
-  it('should generate proper className (no states)', () => {
-    const bemName = 'block';
+  it('should generate proper classNames (no states)', () => {
+    const bemNames = 'block';
     const modifiers = [ ['super'], { ok: true, disabled: false } ];
     const config = {
       states: {},
       separators: { element: '__', modifier: '--' },
     };
-    const className = applyMods(config, bemName, modifiers);
+    const classNames = applyMods(config, bemNames, modifiers);
 
-    assert.equal(className, 'block block--super block--ok');
+    assert.equal(classNames, 'block block--super block--ok');
   });
 
-  it('should return proper className (with state) ', () => {
-    const bemName = 'block';
+  it('should return proper classNames (with state) ', () => {
+    const bemNames = 'block';
     const modifiers = [
       ['super'],
       { ok: true, disabled: false, negative: false },
@@ -85,14 +85,14 @@ describe('applyMods', function() {
       states: { ok: 'is-ok', done: 'is-done', negative: 'is-negative' },
       separators: { element: '__', modifier: '--' },
     };
-    const className = applyMods(config, bemName, modifiers);
+    const classNames = applyMods(config, bemNames, modifiers);
 
-    assert.equal(className, 'block block--super is-ok is-done');
+    assert.equal(classNames, 'block block--super is-ok is-done');
   });
 
 });
 
-describe('customBemName', function() {
+describe('customBemNames', function() {
 
   it('should work with just a block', () => {
     const block = 'block';
@@ -102,7 +102,7 @@ describe('customBemName', function() {
     };
 
     const expected = applyMods(config, block, []);
-    const result = customBemName(config, block);
+    const result = customBemNames(config, block);
 
     assert.equal(result, expected);
   });
@@ -110,14 +110,14 @@ describe('customBemName', function() {
   it('should work with just a block and element', () => {
     const block = 'block';
     const element = 'element';
-    const bemName = 'block__element';
+    const bemNames = 'block__element';
     const config = {
       states: {},
       separators: { element: '__', modifier: '--' },
     };
 
-    const expected = applyMods(config, bemName, []);
-    const result = customBemName(config, block, element);
+    const expected = applyMods(config, bemNames, []);
+    const result = customBemNames(config, block, element);
 
     assert.equal(result, expected);
   });
@@ -131,7 +131,7 @@ describe('customBemName', function() {
     };
 
     const expected = applyMods(config, block, modifiers);
-    const result = customBemName(config, block, ...modifiers);
+    const result = customBemNames(config, block, ...modifiers);
 
     assert.equal(result, expected);
   });
@@ -139,36 +139,36 @@ describe('customBemName', function() {
   it('should work with block and element', () => {
     const block = 'block';
     const element = 'element';
-    const bemName = 'block__element';
+    const bemNames = 'block__element';
     const modifiers = [ ['super'], { ok: true, disabled: false } ];
     const config = {
       states: {},
       separators: { element: '__', modifier: '--' },
     };
 
-    const expected = applyMods(config, bemName, modifiers);
+    const expected = applyMods(config, bemNames, modifiers);
 
-    const result = customBemName(config, block, element, ...modifiers);
+    const result = customBemNames(config, block, element, ...modifiers);
 
     assert.equal(result, expected);
   });
 
 });
 
-describe('bemName', function() {
+describe('bemNames', function() {
 
   it('should just work', () => {
-    const result = bemName('block');
+    const result = bemNames('block');
     assert.equal(result, 'block');
   });
 
   it('should just work with element', () => {
-    const result = bemName('block', 'element');
+    const result = bemNames('block', 'element');
     assert.equal(result, 'block__element');
   });
 
   it('should just work with element and modifiers', () => {
-    const result = bemName(
+    const result = bemNames(
       'block',
       'element',
       ['ok'],
@@ -183,37 +183,37 @@ describe('bemName', function() {
 
 });
 
-describe('bemNameFactory', function() {
+describe('bemNamesFactory', function() {
 
   it('should return function', () => {
-    const result = bemNameFactory();
+    const result = bemNamesFactory();
     assert.isFunction(result);
   });
 
-  it('should work like bemName with no block provided', () => {
-    const factory = bemNameFactory();
+  it('should work like bemNames with no block provided', () => {
+    const factory = bemNamesFactory();
 
-    assert.equal(factory('elo'), bemName('elo'));
-    assert.equal(factory('elo', 'elo'), bemName('elo', 'elo'));
+    assert.equal(factory('elo'), bemNames('elo'));
+    assert.equal(factory('elo', 'elo'), bemNames('elo', 'elo'));
     assert.equal(
       factory('elo', 'elo', ['www']),
-      bemName('elo', 'elo', ['www'])
+      bemNames('elo', 'elo', ['www'])
     );
   });
 
-  it('should work like (...args) => bemName(block, ...args)', () => {
-    const factory = bemNameFactory('block');
+  it('should work like (...args) => bemNames(block, ...args)', () => {
+    const factory = bemNamesFactory('block');
 
-    assert.equal(factory(), bemName('block'));
-    assert.equal(factory('elo'), bemName('block', 'elo'));
+    assert.equal(factory(), bemNames('block'));
+    assert.equal(factory('elo'), bemNames('block', 'elo'));
     assert.equal(
       factory('elo', ['www']),
-      bemName('block', 'elo', ['www'])
+      bemNames('block', 'elo', ['www'])
     );
   });
 
   it('should work with custom separators', () => {
-    const factory = bemNameFactory(
+    const factory = bemNamesFactory(
       'block',
       {},
       { element: '::', modifier: '|' }
@@ -223,7 +223,7 @@ describe('bemNameFactory', function() {
   });
 
   it('should work with states custom labels, and custom separators', () => {
-    const factory = bemNameFactory(
+    const factory = bemNamesFactory(
       'block',
       { ok: 'is-ok' },
       { element: '::', modifier: '@' }
@@ -235,7 +235,7 @@ describe('bemNameFactory', function() {
   });
 
   it('should work with states custom labels', () => {
-    const factory = bemNameFactory(
+    const factory = bemNamesFactory(
       'block',
       { ok: 'is-ok' }
     );
