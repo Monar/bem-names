@@ -8,6 +8,7 @@ import {
   parseModifier,
   applyMods,
   bemNames,
+  flatMap,
 } from './bem-names';
 
 
@@ -245,4 +246,29 @@ describe('bemNamesFactory', function() {
       'block__elo block__elo--www is-ok');
   });
 
+});
+
+describe('flatMap', function() {
+
+  it('works with empty []', () => {
+    const ind = (v) => v;
+    assert.deepEqual(flatMap([], ind), []);
+  });
+
+  it('works with empty {}', () => {
+    const ind = (v) => v;
+    assert.deepEqual(flatMap({}, ind), []);
+  });
+
+  it('works with array', () => {
+    const ind = (i) => i;
+    const array = [1,3,[], [1,2,3]];
+    assert.deepEqual(flatMap(array, ind), [1,3,1,2,3]);
+  });
+
+  it('works with objects', () => {
+    const ind = (i) => i;
+    const array = { test: [], noTest: ['elo'] };
+    assert.deepEqual(flatMap(array, ind), ['elo']);
+  });
 });

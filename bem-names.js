@@ -1,5 +1,3 @@
-import { isString, flatMap } from 'lodash';
-
 const defaultSeparators = { element: '__', modifier: '--' };
 export function bemNamesFactory(
   block,
@@ -58,4 +56,28 @@ export function extractModifier(modifiers) {
   throw new TypeError(
     `Provided modifiers:${modifiers} are neither an Array nor an Object`
   );
+}
+
+function isString(str) {
+  return typeof str === 'string' || str instanceof String;
+}
+
+export function flatMap(colection, fn) {
+  let values = [];
+  if (Array.isArray(colection)) {
+    values = colection.map(fn);
+  } else {
+    values = Object.keys(colection)
+      .map((key) => fn(colection[key], key));
+  }
+
+  function flat(result, element) {
+    if (Array.isArray(element)) {
+      return result.concat(element);
+    }
+    result.push(element);
+    return result;
+  }
+
+  return values.reduce(flat, []);
 }
