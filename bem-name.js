@@ -1,7 +1,6 @@
-import { isPlainObject, isArray, isString, flatMap } from 'lodash';
+import { isString, flatMap } from 'lodash';
 
 const defaultSeparators = { element: '__', modifier: '--' };
-
 export function bemNameFactory(
   block,
   states = {},
@@ -48,11 +47,11 @@ export function parseModifier(config, bemName, modifier) {
 }
 
 export function extractModifier(modifiers) {
-  if (isArray(modifiers)) {
+  if (Array.isArray(modifiers)) {
     return modifiers;
   }
 
-  if (isPlainObject(modifiers)) {
+  if (typeof modifiers === 'object') {
     return flatMap(modifiers, (val, key) => val ? key : []);
   }
 
