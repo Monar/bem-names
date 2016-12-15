@@ -1,11 +1,10 @@
 {
   "name": "bem-names",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Simple generator of bem-like classNames inspired by classnames and bem-classname",
   "main": "dist/index.js",
   "scripts": {
     "test": "mocha --compilers js:babel-register './test.js'",
-    "publish": "npm run build; npm publish",
     "build": "webpack",
     "lint": "eslint ."
   },
