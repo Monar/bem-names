@@ -13,16 +13,20 @@ import bemNames from 'bem-names';
 
 bemNames('block', 'element', ['mod1], { mod2: true, mod3: false })
 // will return block__element block__element--mod1 block__element--mod2
+```
 
+```
 import { customBemNames } from 'bem-names';
 
 const separators = { modifier: '#', element: '-' };
 const states = { mod1: 'is-mod1' };
 const config = { separators, states };
 
-customBemNames(consfig, 'block', 'element', ['mod1], { mod2: true, mod3: false })
+customBemNames(config, 'block', 'element', ['mod1], { mod2: true, mod3: false })
 // will return block-element is-mod1 block-element#mod2
+```
 
+```
 import { bemNamesFactory } from 'bem-names';
 
 const separators = { modifier: '#', element: '-' };
@@ -36,3 +40,4 @@ bem('element')
 
 bem('element', { mod1: true })
 // will return block-element is-mod1
+```

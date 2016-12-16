@@ -1,56 +1,64 @@
-const defaultSeparators = { element: '__', modifier: '--' };
-export function bemNamesFactory(
-  block,
-  states = {},
-  separators = defaultSeparators
-){
-  const config = { block, states, separators };
-  if (block === undefined) {
-    return (...args) => customBemNames(config, ...args);
+export function defaultParseModifier(config, bemName, modifier) {
+  if (modifier in config.states) {
+    return config.states[modifier];
+  }
+
+  return bemName + config.separators.modifier + modifier;
+}
+
+
+const defaultConfig = {
+  separators: { element: '__', modifier: '--' },
+  states: {},
+  parseModifier: defaultParseModifier,
+};
+
+
+export function bemNamesFactory(block, customConfig={}){
+  const config = Object.assign({}, defaultConfig, customConfig);
+  if (!isString(block)) {
+    throw TypeError(`block name: "${block}" is not a string`);
   }
 
   return (...args) => customBemNames(config, block, ...args);
 }
 
+
 export function bemNames(...args) {
-  const config = { states: {}, separators: defaultSeparators };
-  return customBemNames(config, ...args);
+  return customBemNames(defaultConfig, ...args);
 }
+
 
 export  function customBemNames(config, block, ...args) {
-  let bemNames = block;
-
+  let bemName = block;
   if (isString(args[0])) {
-    bemNames = block + config.separators.element + args[0];
-    return applyMods(config, bemNames, args.slice(1));
+    bemName = block + config.separators.element + args[0];
+    return applyMods(config, bemName, args.slice(1));
   }
 
-  return applyMods(config, bemNames, args);
+  return applyMods(config, bemName, args);
 }
 
-export function applyMods(config, bemNames, modifiers) {
-  const flattenedModifiers =
-    flatMap(modifiers, (mods) => extractModifier(mods));
-  const parsedModifiers =
-    flattenedModifiers.map((mod) => parseModifier(config, bemNames, mod));
-  return [bemNames].concat(parsedModifiers).join(' ');
+
+export function applyMods(config, bemName, modifiers) {
+  const { parseModifier } = config;
+  const extracted = modifiers.reduce(extractModifier, []);
+  const parsed = extracted.map((mod) => parseModifier(config, bemName, mod));
+
+  return [bemName].concat(parsed).join(' ');
 }
 
-export function parseModifier(config, bemNames, modifier) {
-  if (modifier in config.states) {
-    return config.states[modifier];
-  }
 
-  return bemNames + config.separators.modifier + modifier;
-}
-
-export function extractModifier(modifiers) {
+export function extractModifier(extracted, modifiers) {
   if (Array.isArray(modifiers)) {
-    return modifiers;
+    return extracted.concat(modifiers);
   }
 
   if (typeof modifiers === 'object') {
-    return flatMap(modifiers, (val, key) => val ? key : []);
+    const extractedModifiers = Object.keys(modifiers)
+      .map((key) => modifiers[key] ? key : null)
+      .filter((val) => val !== null);
+    return extracted.concat(extractedModifiers);
   }
 
   throw new TypeError(
@@ -58,26 +66,7 @@ export function extractModifier(modifiers) {
   );
 }
 
+
 function isString(str) {
   return typeof str === 'string' || str instanceof String;
-}
-
-export function flatMap(colection, fn) {
-  let values = [];
-  if (Array.isArray(colection)) {
-    values = colection.map(fn);
-  } else {
-    values = Object.keys(colection)
-      .map((key) => fn(colection[key], key));
-  }
-
-  function flat(result, element) {
-    if (Array.isArray(element)) {
-      return result.concat(element);
-    }
-    result.push(element);
-    return result;
-  }
-
-  return values.reduce(flat, []);
 }

@@ -2,13 +2,12 @@
 
 import { assert } from 'chai';
 import {
+  defaultParseModifier,
   extractModifier,
   bemNamesFactory,
   customBemNames,
-  parseModifier,
   applyMods,
   bemNames,
-  flatMap,
 } from './bem-names';
 
 
@@ -21,19 +20,25 @@ describe('extractModifier', function() {
 
   it('should return same array', () => {
     const sample = ['blue', 'big'];
-    const result = extractModifier(sample);
-    assert.equal(result, sample);
+    const result = extractModifier([], sample);
+    assert.deepEqual(result, sample);
+  });
+
+  it('should concatenate  arras', () => {
+    const base = ['max'];
+    const sample = ['blue', 'big'];
+    const result = extractModifier(base, sample);
+    assert.deepEqual(result, base.concat(sample));
   });
 
   it('should return array of elements with positive value', () => {
     const sample = { blue: false, big: 'that should be true' };
-    const result = extractModifier(sample);
+    const result = extractModifier([], sample);
     assert.deepEqual(result, ['big']);
   });
-
 });
 
-describe('parseModifier', function() {
+describe('defaultParseModifier', function() {
 
   it('should create proper bem modifier', () => {
     const bemNames = 'block__element';
@@ -42,8 +47,7 @@ describe('parseModifier', function() {
       states: {},
       separators: { element: '__', modifier: '--' },
     };
-    const parsedModifier = parseModifier(config, bemNames, modifier);
-
+    const parsedModifier = defaultParseModifier(config, bemNames, modifier);
     assert.equal(parsedModifier, 'block__element--super');
   });
 
@@ -54,7 +58,7 @@ describe('parseModifier', function() {
       states: { ok: 'is-ok' },
       separators: { element: '__', modifier: '--' },
     };
-    const parsedModifier = parseModifier(config, bemNames, modifier);
+    const parsedModifier = defaultParseModifier(config, bemNames, modifier);
 
     assert.equal(parsedModifier, 'is-ok');
   });
@@ -69,6 +73,7 @@ describe('applyMods', function() {
     const config = {
       states: {},
       separators: { element: '__', modifier: '--' },
+      parseModifier: defaultParseModifier,
     };
     const classNames = applyMods(config, bemNames, modifiers);
 
@@ -85,6 +90,7 @@ describe('applyMods', function() {
     const config = {
       states: { ok: 'is-ok', done: 'is-done', negative: 'is-negative' },
       separators: { element: '__', modifier: '--' },
+      parseModifier: defaultParseModifier,
     };
     const classNames = applyMods(config, bemNames, modifiers);
 
@@ -99,6 +105,7 @@ describe('customBemNames', function() {
     const block = 'block';
     const config = {
       states: {},
+      parseModifier: defaultParseModifier,
       separators: { element: '__', modifier: '--' },
     };
 
@@ -114,6 +121,7 @@ describe('customBemNames', function() {
     const bemNames = 'block__element';
     const config = {
       states: {},
+      parseModifier: defaultParseModifier,
       separators: { element: '__', modifier: '--' },
     };
 
@@ -128,6 +136,7 @@ describe('customBemNames', function() {
     const modifiers = [ ['super'], { ok: true, disabled: false } ];
     const config = {
       states: {},
+      parseModifier: defaultParseModifier,
       separators: { element: '__', modifier: '--' },
     };
 
@@ -144,6 +153,7 @@ describe('customBemNames', function() {
     const modifiers = [ ['super'], { ok: true, disabled: false } ];
     const config = {
       states: {},
+      parseModifier: defaultParseModifier,
       separators: { element: '__', modifier: '--' },
     };
 
@@ -187,19 +197,13 @@ describe('bemNames', function() {
 describe('bemNamesFactory', function() {
 
   it('should return function', () => {
-    const result = bemNamesFactory();
+    const result = bemNamesFactory('');
     assert.isFunction(result);
   });
 
-  it('should work like bemNames with no block provided', () => {
-    const factory = bemNamesFactory();
-
-    assert.equal(factory('elo'), bemNames('elo'));
-    assert.equal(factory('elo', 'elo'), bemNames('elo', 'elo'));
-    assert.equal(
-      factory('elo', 'elo', ['www']),
-      bemNames('elo', 'elo', ['www'])
-    );
+  it('should throw TypeError when no block provided', () => {
+    const fn = () => bemNamesFactory();
+    assert.throws(fn, TypeError);
   });
 
   it('should work like (...args) => bemNames(block, ...args)', () => {
@@ -214,21 +218,23 @@ describe('bemNamesFactory', function() {
   });
 
   it('should work with custom separators', () => {
-    const factory = bemNamesFactory(
-      'block',
-      {},
-      { element: '::', modifier: '|' }
-    );
+    const config = {
+      states: {},
+      separators: { element: '::', modifier: '|' },
+    };
+
+    const factory = bemNamesFactory('block', config);
 
     assert.equal(factory('elo', ['www']), 'block::elo block::elo|www');
   });
 
   it('should work with states custom labels, and custom separators', () => {
-    const factory = bemNamesFactory(
-      'block',
-      { ok: 'is-ok' },
-      { element: '::', modifier: '@' }
-    );
+    const config = {
+      states: { ok: 'is-ok' },
+      separators: { element: '::', modifier: '@' },
+    };
+
+    const factory = bemNamesFactory('block', config);
 
     assert.equal(
       factory('elo', ['www', 'ok']),
@@ -236,39 +242,15 @@ describe('bemNamesFactory', function() {
   });
 
   it('should work with states custom labels', () => {
-    const factory = bemNamesFactory(
-      'block',
-      { ok: 'is-ok' }
-    );
+    const config = {
+      states: { ok: 'is-ok' },
+    };
+
+    const factory = bemNamesFactory('block', config);
 
     assert.equal(
       factory('elo', ['www', 'ok']),
       'block__elo block__elo--www is-ok');
   });
 
-});
-
-describe('flatMap', function() {
-
-  it('works with empty []', () => {
-    const ind = (v) => v;
-    assert.deepEqual(flatMap([], ind), []);
-  });
-
-  it('works with empty {}', () => {
-    const ind = (v) => v;
-    assert.deepEqual(flatMap({}, ind), []);
-  });
-
-  it('works with array', () => {
-    const ind = (i) => i;
-    const array = [1,3,[], [1,2,3]];
-    assert.deepEqual(flatMap(array, ind), [1,3,1,2,3]);
-  });
-
-  it('works with objects', () => {
-    const ind = (i) => i;
-    const array = { test: [], noTest: ['elo'] };
-    assert.deepEqual(flatMap(array, ind), ['elo']);
-  });
 });
