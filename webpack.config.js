@@ -11,4 +11,13 @@ module.exports = {
     path: __dirname + "/dist",
     filename: "index.js",
   },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: 'babel-loader',
+        exclude: 'node_modules/'
+      }
+    ]
+  }
 };
