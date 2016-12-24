@@ -2,8 +2,8 @@ export const defaultConfig = {
   separators: { element: '__', modifier: '--' },
   states: {},
   joinWith: ' ',
-  allowStringModifiers: false,
   bemLike: true,
+  stringModifiers: false,
   parseModifier: defaultParseModifier,
 };
 
@@ -39,13 +39,16 @@ export  function customBemNames(customConfig, block, ...args) {
 
 
 export function applyMods(config, bemName, modifiers) {
-  const { parseModifier, joinWith, allowStringModifiers } = config;
-  let toExtracted = modifiers;
-  if (allowStringModifiers) {
-    toExtracted = modifiers.map((mod) => isString(mod) ? [mod] : mod);
+  const { parseModifier, joinWith, stringModifiers } = config;
+  let toExtract = modifiers;
+  if (stringModifiers) {
+    toExtract = modifiers.map((mod) => isString(mod) ? [mod] : mod);
   }
-  const extracted = toExtracted.reduce(extractModifier, []);
-  const parsed = extracted.map((mod) => parseModifier(config, bemName, mod));
+  const extracted = toExtract.reduce(extractModifier, new Set());
+
+  const parsed = Array.from(extracted).map(
+    (mod) => parseModifier(config, bemName, mod)
+  );
 
   const toJoin = [bemName].concat(parsed).filter((s) => s !== '');
   return toJoin.join(joinWith);
@@ -54,14 +57,16 @@ export function applyMods(config, bemName, modifiers) {
 
 export function extractModifier(extracted, modifiers) {
   if (Array.isArray(modifiers)) {
-    return extracted.concat(modifiers);
+    modifiers.forEach((m) => extracted.add(m));
+    return extracted;
   }
 
   if (typeof modifiers === 'object') {
-    const extractedModifiers = Object.keys(modifiers)
+    Object.keys(modifiers)
       .map((key) => modifiers[key] ? key : null)
-      .filter((val) => val !== null);
-    return extracted.concat(extractedModifiers);
+      .filter((val) => val !== null)
+      .forEach((m) => extracted.add(m));
+    return extracted;
   }
 
   throw new TypeError(

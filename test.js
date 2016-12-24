@@ -19,23 +19,30 @@ describe('extractModifier', function() {
     assert.throws(fn, TypeError);
   });
 
-  it('should return same array', () => {
+  it('should return matching set', () => {
     const sample = ['blue', 'big'];
-    const result = extractModifier([], sample);
-    assert.deepEqual(result, sample);
+    const result = extractModifier(new Set(), sample);
+    assert.deepEqual(result, new Set(sample));
   });
 
-  it('should concatenate  arras', () => {
-    const base = ['max'];
+  it('should concatenate  values ', () => {
+    const base = new Set(['max']);
     const sample = ['blue', 'big'];
     const result = extractModifier(base, sample);
-    assert.deepEqual(result, base.concat(sample));
+    assert.deepEqual(result, new Set(['max', 'blud', 'big']));
   });
 
-  it('should return array of elements with positive value', () => {
+  it('should return set of elements with positive value', () => {
     const sample = { blue: false, big: 'that should be true' };
-    const result = extractModifier([], sample);
-    assert.deepEqual(result, ['big']);
+    const result = extractModifier(new Set(), sample);
+    assert.deepEqual(result, new Set(['big']));
+  });
+
+  it('should return set without duplicates', () => {
+    const init = new Set(['big']);
+    const sample = { big: true };
+    const result = extractModifier(init, sample);
+    assert.deepEqual(result, init);
   });
 
 });
@@ -72,11 +79,7 @@ describe('applyMods', function() {
   it('should generate proper classNames (no states)', () => {
     const bemNames = 'block';
     const modifiers = [ ['super'], { ok: true, disabled: false } ];
-    const config = Object.assign({}, defaultConfig, {
-      states: {},
-      separators: { element: '__', modifier: '--' },
-      parseModifier: defaultParseModifier,
-    });
+    const config = defaultConfig;
     const classNames = applyMods(config, bemNames, modifiers);
 
     assert.equal(classNames, 'block block--super block--ok');
@@ -91,12 +94,34 @@ describe('applyMods', function() {
     ];
     const config = Object.assign({}, defaultConfig, {
       states: { ok: 'is-ok', done: 'is-done', negative: 'is-negative' },
-      separators: { element: '__', modifier: '--' },
-      parseModifier: defaultParseModifier,
     });
     const classNames = applyMods(config, bemNames, modifiers);
 
     assert.equal(classNames, 'block block--super is-ok is-done');
+  });
+
+  it('should handle stringModifiers', () => {
+    const bemNames = 'block';
+    const modifiers = ['super', 'double', ['done']];
+    const config = Object.assign({}, defaultConfig, {
+      states: { done: 'is-done' },
+      stringModifiers: true,
+    });
+    const classNames = applyMods(config, bemNames, modifiers);
+
+    assert.equal(classNames, 'block block--super block--double is-done');
+  });
+
+  it('should handle uniqueModifiers', () => {
+    const bemNames = 'block';
+    const modifiers = [{ 'super': false }, 'super', ['done'], { done: false } ];
+    const config = Object.assign({}, defaultConfig, {
+      states: { done: 'is-done' },
+      stringModifiers: true,
+    });
+    const classNames = applyMods(config, bemNames, modifiers);
+
+    assert.equal(classNames, 'block block--super is-done');
   });
 
 });
@@ -156,7 +181,7 @@ describe('customBemNames', function() {
     const modifiers = [ ['super'], { ok: true, disabled: false }, 'string' ];
     const config = {
       parseModifier: (c, n, m) => m,
-      allowStringModifiers: true,
+      stringModifiers: true,
       bemLike: false,
     };
 
@@ -191,6 +216,16 @@ describe('bemNames', function() {
       result,
       'block__element block__element--ok block__element--go'
     );
+  });
+
+  it('should return only unique modifiers', () => {
+    const result = bemNames(
+      'block',
+      ['ok'],
+      { ok: true, no: false }
+    );
+
+    assert.equal( result, 'block block--ok');
   });
 
 });
@@ -258,7 +293,7 @@ describe('bemNamesFactory', function() {
     const config = {
       states: {},
       parseModifier: (conf, bemName, mod) => mod,
-      allowStringModifiers: true,
+      stringModifiers: true,
     };
 
     const factory = bemNamesFactory('block', config);
