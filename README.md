@@ -1,6 +1,7 @@
 # bemNames
 
 [![Build Status](https://travis-ci.org/Monar/bem-names.svg?branch=master)](https://travis-ci.org/Monar/bem-names)
+[![npm version](https://badge.fury.io/js/bem-names.svg)](https://badge.fury.io/js/bem-names)
 
 Simple function for generating bem-like classNames inspired by classNames, bem-classname, bem-classnames.
 
