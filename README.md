@@ -1,5 +1,7 @@
 # bemNames
 
+[![Build Status](https://travis-ci.org/Monar/bem-names.svg?branch=master)](https://travis-ci.org/Monar/bem-names)
+
 Simple function for generating bem-like classNames inspired by classNames, bem-classname, bem-classnames.
 
 I'm creating this package to allow use of shared components within projects using other variations of BEM naming convention.
