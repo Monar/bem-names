@@ -2,6 +2,7 @@ export const defaultConfig = {
   separators: { element: '__', modifier: '--' },
   states: {},
   joinWith: ' ',
+  allowStringModifiers: false,
   parseModifier: defaultParseModifier,
 };
 
@@ -34,14 +35,14 @@ export  function customBemNames(config, block, ...args) {
 
 export function applyMods(config, bemName, modifiers) {
   const { parseModifier, joinWith } = config;
-  const extracted = modifiers.reduce(extractModifier, []);
+  const extracted = modifiers.reduce(extractModifier, [], config.allowStringModifiers);
   const parsed = extracted.map((mod) => parseModifier(config, bemName, mod));
 
   return [bemName].concat(parsed).join(joinWith);
 }
 
 
-export function extractModifier(extracted, modifiers) {
+export function extractModifier(extracted, modifiers, allowStrings=false) {
   if (Array.isArray(modifiers)) {
     return extracted.concat(modifiers);
   }
@@ -51,6 +52,10 @@ export function extractModifier(extracted, modifiers) {
       .map((key) => modifiers[key] ? key : null)
       .filter((val) => val !== null);
     return extracted.concat(extractedModifiers);
+  }
+
+  if (allowStrings && isString(modifiers)) {
+    return extracted.concat([modifiers]);
   }
 
   throw new TypeError(

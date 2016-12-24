@@ -37,6 +37,12 @@ describe('extractModifier', function() {
     const result = extractModifier([], sample);
     assert.deepEqual(result, ['big']);
   });
+
+  it('should return array with just string modifiers', () => {
+    const sample = 'simple_string';
+    const result = extractModifier(['prev'], sample, true);
+    assert.deepEqual(result, ['prev', 'simple_string']);
+  });
 });
 
 describe('defaultParseModifier', function() {
@@ -252,6 +258,20 @@ describe('bemNamesFactory', function() {
     assert.equal(
       factory('elo', ['www', 'ok']),
       'block__elo block__elo--www is-ok');
+  });
+
+  it('should allow basic classnames simulation', () => {
+    const config = {
+      states: {},
+      parseModifier: (conf, bemName, mod) => mod,
+      allowStringModifiers: true,
+    };
+
+    const factory = bemNamesFactory('block', config);
+
+    assert.equal(
+      factory(['www', 'ok'], 'test', { wee: true }, 'final'),
+      'block www ok test wee final');
   });
 
 });
