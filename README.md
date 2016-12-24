@@ -5,11 +5,11 @@
 
 Simple function for generating bem-like classNames inspired by classNames, bem-classname, bem-classnames.
 
-This package is aming to provide layer of abstraction between diferent styles of BEM like naming convertion or event classic className behaviour.
+This package is aiming to provide layer of abstraction between different styles of BEM like naming convention or event classic className behaviour.
 
 ### It's under development so be warned!!!
 
-Expect many changes, and some more stable release around begining of Jenuary 2017!
+Expect many changes, and some more stable release around beginning of January 2017!
 
 ### How it works (general idea - might change in the future)
 
