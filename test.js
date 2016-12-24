@@ -2,6 +2,7 @@
 
 import { assert } from 'chai';
 import {
+  defaultConfig,
   defaultParseModifier,
   extractModifier,
   bemNamesFactory,
@@ -43,10 +44,10 @@ describe('defaultParseModifier', function() {
   it('should create proper bem modifier', () => {
     const bemNames = 'block__element';
     const modifier = 'super';
-    const config = {
+    const config = Object.assign({}, defaultConfig, {
       states: {},
       separators: { element: '__', modifier: '--' },
-    };
+    });
     const parsedModifier = defaultParseModifier(config, bemNames, modifier);
     assert.equal(parsedModifier, 'block__element--super');
   });
@@ -54,10 +55,10 @@ describe('defaultParseModifier', function() {
   it('should return string based on states map', () => {
     const bemNames = 'block__element';
     const modifier = 'ok';
-    const config = {
+    const config = Object.assign({}, defaultConfig, {
       states: { ok: 'is-ok' },
       separators: { element: '__', modifier: '--' },
-    };
+    });
     const parsedModifier = defaultParseModifier(config, bemNames, modifier);
 
     assert.equal(parsedModifier, 'is-ok');
@@ -70,11 +71,11 @@ describe('applyMods', function() {
   it('should generate proper classNames (no states)', () => {
     const bemNames = 'block';
     const modifiers = [ ['super'], { ok: true, disabled: false } ];
-    const config = {
+    const config = Object.assign({}, defaultConfig, {
       states: {},
       separators: { element: '__', modifier: '--' },
       parseModifier: defaultParseModifier,
-    };
+    });
     const classNames = applyMods(config, bemNames, modifiers);
 
     assert.equal(classNames, 'block block--super block--ok');
@@ -87,11 +88,11 @@ describe('applyMods', function() {
       { ok: true, disabled: false, negative: false },
       [ 'done'],
     ];
-    const config = {
+    const config = Object.assign({}, defaultConfig, {
       states: { ok: 'is-ok', done: 'is-done', negative: 'is-negative' },
       separators: { element: '__', modifier: '--' },
       parseModifier: defaultParseModifier,
-    };
+    });
     const classNames = applyMods(config, bemNames, modifiers);
 
     assert.equal(classNames, 'block block--super is-ok is-done');
@@ -103,11 +104,11 @@ describe('customBemNames', function() {
 
   it('should work with just a block', () => {
     const block = 'block';
-    const config = {
+    const config = Object.assign({}, defaultConfig, {
       states: {},
       parseModifier: defaultParseModifier,
       separators: { element: '__', modifier: '--' },
-    };
+    });
 
     const expected = applyMods(config, block, []);
     const result = customBemNames(config, block);
@@ -119,11 +120,11 @@ describe('customBemNames', function() {
     const block = 'block';
     const element = 'element';
     const bemNames = 'block__element';
-    const config = {
+    const config = Object.assign({}, defaultConfig, {
       states: {},
       parseModifier: defaultParseModifier,
       separators: { element: '__', modifier: '--' },
-    };
+    });
 
     const expected = applyMods(config, bemNames, []);
     const result = customBemNames(config, block, element);
@@ -134,11 +135,11 @@ describe('customBemNames', function() {
   it('should work with block', () => {
     const block = 'block';
     const modifiers = [ ['super'], { ok: true, disabled: false } ];
-    const config = {
+    const config = Object.assign({}, defaultConfig, {
       states: {},
       parseModifier: defaultParseModifier,
       separators: { element: '__', modifier: '--' },
-    };
+    });
 
     const expected = applyMods(config, block, modifiers);
     const result = customBemNames(config, block, ...modifiers);
@@ -151,11 +152,11 @@ describe('customBemNames', function() {
     const element = 'element';
     const bemNames = 'block__element';
     const modifiers = [ ['super'], { ok: true, disabled: false } ];
-    const config = {
+    const config = Object.assign({}, defaultConfig, {
       states: {},
       parseModifier: defaultParseModifier,
       separators: { element: '__', modifier: '--' },
-    };
+    });
 
     const expected = applyMods(config, bemNames, modifiers);
 

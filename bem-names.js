@@ -1,17 +1,14 @@
-export function defaultParseModifier(config, bemName, modifier) {
-  if (modifier in config.states) {
-    return config.states[modifier];
-  }
-
-  return bemName + config.separators.modifier + modifier;
-}
-
-
-const defaultConfig = {
+export const defaultConfig = {
   separators: { element: '__', modifier: '--' },
   states: {},
+  joinWith: ' ',
   parseModifier: defaultParseModifier,
 };
+
+
+export function bemNames(...args) {
+  return customBemNames(defaultConfig, ...args);
+}
 
 
 export function bemNamesFactory(block, customConfig={}){
@@ -21,11 +18,6 @@ export function bemNamesFactory(block, customConfig={}){
   }
 
   return (...args) => customBemNames(config, block, ...args);
-}
-
-
-export function bemNames(...args) {
-  return customBemNames(defaultConfig, ...args);
 }
 
 
@@ -41,11 +33,11 @@ export  function customBemNames(config, block, ...args) {
 
 
 export function applyMods(config, bemName, modifiers) {
-  const { parseModifier } = config;
+  const { parseModifier, joinWith } = config;
   const extracted = modifiers.reduce(extractModifier, []);
   const parsed = extracted.map((mod) => parseModifier(config, bemName, mod));
 
-  return [bemName].concat(parsed).join(' ');
+  return [bemName].concat(parsed).join(joinWith);
 }
 
 
@@ -69,4 +61,13 @@ export function extractModifier(extracted, modifiers) {
 
 function isString(str) {
   return typeof str === 'string' || str instanceof String;
+}
+
+
+export function defaultParseModifier(config, bemName, modifier) {
+  if (modifier in config.states) {
+    return config.states[modifier];
+  }
+
+  return bemName + config.separators.modifier + modifier;
 }
