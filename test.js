@@ -38,11 +38,6 @@ describe('extractModifier', function() {
     assert.deepEqual(result, ['big']);
   });
 
-  it('should return array with just string modifiers', () => {
-    const sample = 'simple_string';
-    const result = extractModifier(['prev'], sample, true);
-    assert.deepEqual(result, ['prev', 'simple_string']);
-  });
 });
 
 describe('defaultParseModifier', function() {
@@ -110,11 +105,7 @@ describe('customBemNames', function() {
 
   it('should work with just a block', () => {
     const block = 'block';
-    const config = Object.assign({}, defaultConfig, {
-      states: {},
-      parseModifier: defaultParseModifier,
-      separators: { element: '__', modifier: '--' },
-    });
+    const config = defaultConfig;
 
     const expected = applyMods(config, block, []);
     const result = customBemNames(config, block);
@@ -126,11 +117,7 @@ describe('customBemNames', function() {
     const block = 'block';
     const element = 'element';
     const bemNames = 'block__element';
-    const config = Object.assign({}, defaultConfig, {
-      states: {},
-      parseModifier: defaultParseModifier,
-      separators: { element: '__', modifier: '--' },
-    });
+    const config = defaultConfig;
 
     const expected = applyMods(config, bemNames, []);
     const result = customBemNames(config, block, element);
@@ -141,11 +128,7 @@ describe('customBemNames', function() {
   it('should work with block', () => {
     const block = 'block';
     const modifiers = [ ['super'], { ok: true, disabled: false } ];
-    const config = Object.assign({}, defaultConfig, {
-      states: {},
-      parseModifier: defaultParseModifier,
-      separators: { element: '__', modifier: '--' },
-    });
+    const config = defaultConfig;
 
     const expected = applyMods(config, block, modifiers);
     const result = customBemNames(config, block, ...modifiers);
@@ -158,17 +141,28 @@ describe('customBemNames', function() {
     const element = 'element';
     const bemNames = 'block__element';
     const modifiers = [ ['super'], { ok: true, disabled: false } ];
-    const config = Object.assign({}, defaultConfig, {
-      states: {},
-      parseModifier: defaultParseModifier,
-      separators: { element: '__', modifier: '--' },
-    });
+    const config = defaultConfig;
 
     const expected = applyMods(config, bemNames, modifiers);
 
     const result = customBemNames(config, block, element, ...modifiers);
 
     assert.equal(result, expected);
+  });
+
+  it('should work like classnames', () => {
+    const block = 'block';
+    const element = 'element';
+    const modifiers = [ ['super'], { ok: true, disabled: false }, 'string' ];
+    const config = {
+      parseModifier: (c, n, m) => m,
+      allowStringModifiers: true,
+      bemLike: false,
+    };
+
+    const result = customBemNames(config, block, element, ...modifiers);
+
+    assert.equal(result, 'block element super ok string');
   });
 
 });

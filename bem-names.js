@@ -3,6 +3,7 @@ export const defaultConfig = {
   states: {},
   joinWith: ' ',
   allowStringModifiers: false,
+  bemLike: true,
   parseModifier: defaultParseModifier,
 };
 
@@ -12,8 +13,7 @@ export function bemNames(...args) {
 }
 
 
-export function bemNamesFactory(block, customConfig={}){
-  const config = Object.assign({}, defaultConfig, customConfig);
+export function bemNamesFactory(block, config={}){
   if (!isString(block)) {
     throw TypeError(`block name: "${block}" is not a string`);
   }
@@ -22,27 +22,37 @@ export function bemNamesFactory(block, customConfig={}){
 }
 
 
-export  function customBemNames(config, block, ...args) {
-  let bemName = block;
+export  function customBemNames(customConfig, block, ...args) {
+  const config = Object.assign({}, defaultConfig, customConfig);
+
+  if (!config.bemLike) {
+    return applyMods(config, '', [block].concat(args));
+  }
+
   if (isString(args[0])) {
-    bemName = block + config.separators.element + args[0];
+    const bemName = block + config.separators.element + args[0];
     return applyMods(config, bemName, args.slice(1));
   }
 
-  return applyMods(config, bemName, args);
+  return applyMods(config, block, args);
 }
 
 
 export function applyMods(config, bemName, modifiers) {
-  const { parseModifier, joinWith } = config;
-  const extracted = modifiers.reduce(extractModifier, [], config.allowStringModifiers);
+  const { parseModifier, joinWith, allowStringModifiers } = config;
+  let toExtracted = modifiers;
+  if (allowStringModifiers) {
+    toExtracted = modifiers.map((mod) => isString(mod) ? [mod] : mod);
+  }
+  const extracted = toExtracted.reduce(extractModifier, []);
   const parsed = extracted.map((mod) => parseModifier(config, bemName, mod));
 
-  return [bemName].concat(parsed).join(joinWith);
+  const toJoin = [bemName].concat(parsed).filter((s) => s !== '');
+  return toJoin.join(joinWith);
 }
 
 
-export function extractModifier(extracted, modifiers, allowStrings=false) {
+export function extractModifier(extracted, modifiers) {
   if (Array.isArray(modifiers)) {
     return extracted.concat(modifiers);
   }
@@ -52,10 +62,6 @@ export function extractModifier(extracted, modifiers, allowStrings=false) {
       .map((key) => modifiers[key] ? key : null)
       .filter((val) => val !== null);
     return extracted.concat(extractedModifiers);
-  }
-
-  if (allowStrings && isString(modifiers)) {
-    return extracted.concat([modifiers]);
   }
 
   throw new TypeError(
