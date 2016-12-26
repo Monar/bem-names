@@ -6,6 +6,7 @@
 Simple function for generating bem-like classNames inspired by classNames, bem-classname, bem-classnames.
 
 This package is aiming to provide layer of abstraction between different styles of BEM like naming convention or event classic className behaviour.
+All returned modifiers are unique (no duplicates). 
 
 ### It's under development so be warned!!!
 
@@ -40,13 +41,13 @@ const defaultConfig = {
   states: {},
   joinWith: '',
   bemLike: true,
-  allowStringModifiers: false,
+  stringModifiers: false,
   parseModifier: defaultParseModifier, // (config:object, bemName:str, modifier:str) => string
 };
 ```
 
-* [bemLike] flag is treating first string as a block name and a second one as a element
-* [allowStringModifiers] flag allows to use strings as modifiers (sth. like classNames) with exception to first and second param (check *bemLike*)
+* **bemLike** flag is treating first string as a block name and a second one as a element
+* **stringModifiers** flag allows to use strings as modifiers (sth. like classNames) with exception to first and second param (check *bemLike*)
 
 ##### General approach to bemNames
 
@@ -90,7 +91,7 @@ bem('element', { mod1: true })
 import { bemNamesFactory } from 'bem-names';
 
 const config = { 
-  allowStringModifiers: true,
+  stringModifiers: true,
   bemLike: false,
   parseModifier: (c, n, m) => m,
 };
