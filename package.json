@@ -20,13 +20,13 @@
     "url": "git@github.com:Monar/bem-names.git"
   },
   "devDependencies": {
-    "babel-core": "^6.21.0",
-    "babel-loader": "^6.2.10",
-    "babel-preset-es2015": "^6.18.0",
-    "babel-register": "^6.18.0",
-    "chai": "^3.5.0",
-    "eslint": "^3.12.1",
-    "mocha": "^3.2.0",
-    "webpack": "^2.2.0-rc.1"
+    "babel-core": "6.21.0",
+    "babel-loader": "6.2.10",
+    "babel-preset-es2015": "6.18.0",
+    "babel-register": "6.18.0",
+    "chai": "3.5.0",
+    "eslint": "3.12.2",
+    "mocha": "3.2.0",
+    "webpack": "2.2.0-rc.2"
   }
 }
