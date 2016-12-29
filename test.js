@@ -3,8 +3,9 @@
 import { assert } from 'chai';
 import {
   defaultConfig,
+  StringModifiers,
   defaultParseModifier,
-  extractModifier,
+  extractModifiers,
   bemNamesFactory,
   customBemNames,
   applyMods,
@@ -14,34 +15,89 @@ import {
 
 describe('extractModifier', function() {
 
-  it('should throw TypeError', () => {
-    const fn = () => extractModifier('string param');
+  it('should returned function', () => {
+    const fn = extractModifiers(defaultConfig);
+    assert.isFunction(fn);
+  });
+
+  it('should throw for incorrect type', () => {
+    const extract = extractModifiers(defaultConfig);
+    const fn = () => extract(new Set(), null);
     assert.throws(fn, TypeError);
   });
 
+  it('should throw for string', () => {
+    const config = Object.assign(
+      {},
+      defaultConfig,
+      { stringModifiers: StringModifiers.THROW }
+    );
+
+    const extract = extractModifiers(config);
+
+    const fn = () => extract(new Set(), 'string');
+    assert.throws(fn, TypeError);
+  });
+
+  it('should not throw for string, but print to console', () => {
+    const config = Object.assign(
+      {},
+      defaultConfig,
+      { stringModifiers: StringModifiers.WARN }
+    );
+
+    const extract = extractModifiers(config);
+
+    const fn = () => extract(new Set(), 'string');
+    assert.doesNotThrow(fn, TypeError);
+  });
+
+  it('should not add a string', () => {
+    const config = Object.assign(
+      {},
+      defaultConfig,
+      { stringModifiers: StringModifiers.ALLOW }
+    );
+
+    const extract = extractModifiers(config);
+    const result =  extract(new Set(), 'string');
+
+    assert.deepEqual(result, new Set(['string']));
+  });
+
+  it('should omit a string', () => {
+    const config = Object.assign(
+      {},
+      defaultConfig,
+      { stringModifiers: StringModifiers.PASS_THROUGH }
+    );
+
+    const extract = extractModifiers(config);
+    const result =  extract(new Set(), 'string');
+
+    assert.deepEqual(result, new Set());
+  });
+
   it('should return matching set', () => {
+    const extract = extractModifiers(defaultConfig);
     const sample = ['blue', 'big'];
-    const result = extractModifier(new Set(), sample);
+
+    const result = extract(new Set(), sample);
     assert.deepEqual(result, new Set(sample));
   });
 
-  it('should concatenate  values ', () => {
-    const base = new Set(['max']);
-    const sample = ['blue', 'big'];
-    const result = extractModifier(base, sample);
-    assert.deepEqual(result, new Set(['max', 'blud', 'big']));
-  });
-
   it('should return set of elements with positive value', () => {
+    const extract = extractModifiers(defaultConfig);
     const sample = { blue: false, big: 'that should be true' };
-    const result = extractModifier(new Set(), sample);
+    const result = extract(new Set(), sample);
     assert.deepEqual(result, new Set(['big']));
   });
 
   it('should return set without duplicates', () => {
+    const extract = extractModifiers(defaultConfig);
     const init = new Set(['big']);
     const sample = { big: true };
-    const result = extractModifier(init, sample);
+    const result = extract(init, sample);
     assert.deepEqual(result, init);
   });
 
@@ -105,7 +161,7 @@ describe('applyMods', function() {
     const modifiers = ['super', 'double', ['done']];
     const config = Object.assign({}, defaultConfig, {
       states: { done: 'is-done' },
-      stringModifiers: true,
+      stringModifiers: StringModifiers.ALLOW,
     });
     const classNames = applyMods(config, bemNames, modifiers);
 
@@ -117,7 +173,7 @@ describe('applyMods', function() {
     const modifiers = [{ 'super': false }, 'super', ['done'], { done: false } ];
     const config = Object.assign({}, defaultConfig, {
       states: { done: 'is-done' },
-      stringModifiers: true,
+      stringModifiers: StringModifiers.ALLOW,
     });
     const classNames = applyMods(config, bemNames, modifiers);
 
@@ -175,13 +231,29 @@ describe('customBemNames', function() {
     assert.equal(result, expected);
   });
 
+  it('should pass through with string modifiers', () => {
+    const block = 'block';
+    const element = 'element';
+    const modifiers = [ ['super'], 'just_a_string' ];
+    const config = Object.assign(
+      {},
+      defaultConfig,
+      { stringModifiers: StringModifiers.PASS_THROUGH }
+    );
+
+    const result = customBemNames(config, block, element, ...modifiers);
+
+    const expected = 'block__element block__element--super just_a_string';
+    assert.equal(result, expected);
+  });
+
   it('should work like classnames', () => {
     const block = 'block';
     const element = 'element';
     const modifiers = [ ['super'], { ok: true, disabled: false }, 'string' ];
     const config = {
       parseModifier: (c, n, m) => m,
-      stringModifiers: true,
+      stringModifiers: StringModifiers.ALLOW,
       bemLike: false,
     };
 
@@ -293,7 +365,7 @@ describe('bemNamesFactory', function() {
     const config = {
       states: {},
       parseModifier: (conf, bemName, mod) => mod,
-      stringModifiers: true,
+      stringModifiers: StringModifiers.ALLOW,
     };
 
     const factory = bemNamesFactory('block', config);

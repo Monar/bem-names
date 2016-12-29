@@ -1,9 +1,17 @@
+export const StringModifiers = {
+  THROW: 'throw',
+  WARN: 'warn',
+  ALLOW: 'allow',
+  PASS_THROUGH: 'passThrough',
+};
+
+
 export const defaultConfig = {
   separators: { element: '__', modifier: '--' },
   states: {},
   joinWith: ' ',
   bemLike: true,
-  stringModifiers: false,
+  stringModifiers: StringModifiers.THROW,
   parseModifier: defaultParseModifier,
 };
 
@@ -23,7 +31,9 @@ export function bemNamesFactory(block, config={}){
 
 
 export  function customBemNames(customConfig, block, ...args) {
-  const config = Object.assign({}, defaultConfig, customConfig);
+  const separators =
+    Object.assign({}, defaultConfig.separators, customConfig.separators);
+  const config = Object.assign({}, defaultConfig, customConfig, { separators });
 
   if (!config.bemLike) {
     return applyMods(config, '', [block].concat(args));
@@ -41,37 +51,62 @@ export  function customBemNames(customConfig, block, ...args) {
 export function applyMods(config, bemName, modifiers) {
   const { parseModifier, joinWith, stringModifiers } = config;
   let toExtract = modifiers;
-  if (stringModifiers) {
-    toExtract = modifiers.map((mod) => isString(mod) ? [mod] : mod);
+  let toPass = [];
+
+  if (stringModifiers === StringModifiers.PASS_THROUGH) {
+    toPass = modifiers.filter((mod) => isString(mod));
   }
-  const extracted = toExtract.reduce(extractModifier, new Set());
+
+  const extracted = toExtract.reduce(extractModifiers(config), new Set());
 
   const parsed = Array.from(extracted).map(
     (mod) => parseModifier(config, bemName, mod)
   );
 
-  const toJoin = [bemName].concat(parsed).filter((s) => s !== '');
+  const toJoin = [bemName].concat(parsed, toPass).filter((s) => s !== '');
   return toJoin.join(joinWith);
 }
 
 
-export function extractModifier(extracted, modifiers) {
-  if (Array.isArray(modifiers)) {
-    modifiers.forEach((m) => extracted.add(m));
-    return extracted;
-  }
+export function extractModifiers(config) {
+  return (extracted, modifiers) => {
+    if (Array.isArray(modifiers)) {
+      modifiers.forEach((m) => extracted.add(m));
+      return extracted;
+    }
 
-  if (typeof modifiers === 'object') {
-    Object.keys(modifiers)
-      .map((key) => modifiers[key] ? key : null)
-      .filter((val) => val !== null)
-      .forEach((m) => extracted.add(m));
-    return extracted;
-  }
+    if (typeof modifiers === 'object') {
+      Object.keys(modifiers)
+        .map((key) => modifiers[key] ? key : null)
+        .filter((val) => val !== null)
+        .forEach((m) => extracted.add(m));
+      return extracted;
+    }
 
-  throw new TypeError(
-    `Provided modifiers:${modifiers} are neither an Array nor an Object`
-  );
+    if (!isString(modifiers)) {
+      throw new TypeError(
+        `Provided modifiers: "${modifiers}" is not supported`
+      );
+    }
+
+    switch(config.stringModifiers) {
+      case StringModifiers.ALLOW:
+        extracted.add(modifiers);
+        break;
+
+      case StringModifiers.THROW:
+        throw new TypeError(`Provided modifier "${modifiers}" is now allowed!`);
+
+      case StringModifiers.WARN:
+        console.warn(`Provided modifier "${modifiers}" is now allowed!`);
+        break;
+
+      case StringModifiers.PASS_THROUGH:
+        break;
+    }
+
+    return extracted;
+  };
 }
 
 
