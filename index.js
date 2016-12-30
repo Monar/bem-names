@@ -1,4 +1,17 @@
-import { bemNames, customBemNames, bemNamesFactory } from './bem-names';
+import {
+  bemNames,
+  customBemNames,
+  bemNamesFactory,
+  StringModifiers,
+  CssModulePolicy,
+} from './bem-names';
 
-export { bemNamesFactory, bemNames, customBemNames };
+export {
+  bemNamesFactory,
+  bemNames,
+  customBemNames,
+  StringModifiers,
+  CssModulePolicy,
+};
+
 export default bemNames;

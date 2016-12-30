@@ -4,6 +4,7 @@ import { assert } from 'chai';
 import {
   defaultConfig,
   StringModifiers,
+  CssModulePolicy,
   defaultParseModifier,
   extractModifiers,
   bemNamesFactory,
@@ -214,6 +215,46 @@ describe('applyMods', function() {
     assert.equal(classNames, 'block block--super is-done');
   });
 
+  it('should work with cssModules', () => {
+    const bemNames = 'block';
+    const modifiers = [{ 'super': true }];
+    const config = Object.assign({}, defaultConfig, {
+      cssModule: { block: '123', 'block--super': '234' },
+      cssModulePolicy: CssModulePolicy.THROW,
+    });
+    const classNames = applyMods(config, bemNames, modifiers);
+
+    assert.equal(classNames, '123 234');
+  });
+
+  it('should throw when missing key in cssModules', () => {
+    const bemNames = 'block';
+    const modifiers = [{ 'super': true, ok: true }];
+    const config = Object.assign({}, defaultConfig, {
+      cssModule: { block: '123', 'block--super': '234' },
+      cssModulePolicy: CssModulePolicy.THROW,
+    });
+    const fn = () => applyMods(config, bemNames, modifiers);
+
+    assert.throws(fn, Error);
+  });
+
+  it('should not throw and omit modifier and print to console', () => {
+    const bemNames = 'block';
+    const modifiers = [{ 'super': true, ok: true }];
+    const config = Object.assign({}, defaultConfig, {
+      cssModule: { block: '123', 'block--super': '234' },
+      cssModulePolicy: CssModulePolicy.WARN,
+    });
+
+    let result = '';
+    const fn = () => { result = applyMods(config, bemNames, modifiers); };
+
+    assert.doesNotThrow(fn, Error, 'does not throws');
+    assert.equal(result, '123 234', 'omits ok');
+  });
+
+
 });
 
 describe('customBemNames', function() {
@@ -417,6 +458,15 @@ describe('bemNamesFactory', function() {
     assert.equal(
       factory(['www', 'ok'], { wee: true, ups: 'value', ni: false }),
       'block block--www block--ok block--wee block--ups-value');
+  });
+
+  it('should apply cssModule', () => {
+    const cssModule = { 'block--www': '123', block: '321' };
+    const config = { cssModule, cssModulePolicy: CssModulePolicy.THROW };
+
+    const factory = bemNamesFactory('block', config);
+
+    assert.equal(factory(['www']), '321 123');
   });
 
 });

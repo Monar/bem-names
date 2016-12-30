@@ -6,9 +6,18 @@ export const StringModifiers = {
 };
 
 
+export const CssModulePolicy = {
+  THROW: 'throw',
+  WARN: 'warn',
+  IGNORE: 'ignore',
+};
+
+
 export const defaultConfig = {
   separators: { element: '__', modifier: '--', keyValue: '-' },
   states: {},
+  cssModule: {},
+  cssModulePolicy: CssModulePolicy.IGNORE,
   joinWith: ' ',
   bemLike: true,
   keyValue: false,
@@ -50,7 +59,13 @@ export  function customBemNames(customConfig, block, ...args) {
 
 
 export function applyMods(config, bemName, modifiers) {
-  const { parseModifier, joinWith, stringModifiers } = config;
+  const {
+    parseModifier,
+    joinWith,
+    stringModifiers,
+    cssModule,
+    cssModulePolicy,
+  } = config;
   let toExtract = modifiers;
   let toPass = [];
 
@@ -64,8 +79,26 @@ export function applyMods(config, bemName, modifiers) {
     (mod) => parseModifier(config, bemName, mod)
   );
 
-  const toJoin = [bemName].concat(parsed, toPass).filter((s) => s !== '');
-  return toJoin.join(joinWith);
+  let toJoin = [bemName].concat(parsed, toPass);
+
+  if (cssModulePolicy === CssModulePolicy.THROW) {
+    toJoin = toJoin.map((key) => {
+      if (!(key in cssModule)) {
+        throw new Error(`Key ${key} is missing in cssModule`);
+      }
+      return cssModule[key];
+    });
+  } else if (cssModulePolicy === CssModulePolicy.WARN) {
+    toJoin = toJoin.map((key) => {
+      if (!(key in cssModule)) {
+        console.warn(`Key ${key} is missing in cssModule`);
+        return '';
+      }
+      return cssModule[key];
+    });
+  }
+
+  return toJoin.filter((s) => s !== '').join(joinWith);
 }
 
 
