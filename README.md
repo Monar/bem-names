@@ -3,26 +3,40 @@
 [![Build Status](https://travis-ci.org/Monar/bem-names.svg?branch=master)](https://travis-ci.org/Monar/bem-names)
 [![npm version](https://badge.fury.io/js/bem-names.svg)](https://badge.fury.io/js/bem-names)
 
-Simple function for generating bem-like classNames inspired by classNames, bem-classname, bem-classnames.
+Ultimate generator of bem-like class names. bemNames can follow any BEM naming
+convention and allow easy transition between any of them. It supports
+transition in and out from classic
+[classNames](https://www.npmjs.com/package/classnames) as well as
+[css-Modules](https://github.com/css-modules/css-modules).
 
-This package is aiming to provide layer of abstraction between different styles of BEM like naming convention or event classic className behaviour.
-All returned modifiers are unique (no duplicates). 
+### Install
+
+```sh
+yarn add bem-names
+```
+
+```sh
+npm install bem-names --save
+```
 
 ### It's under development so be warned!!!
 
-Expect many changes, and some more stable release around beginning of January 2017!
+Expect some changes, and stable release around beginning of January 2017!
+As of version `0.4.0` it's mostly feature complete.
 
-### How it works (general idea - might change in the future)
+### How it works (general idea)
 
-##### Basic in-line usage (preferred BEM naming convection)
+All returned modifiers are unique (no duplicates).
+
+#### Basic in-line usage (default BEM naming convention)
 ```js
 import bemNames from 'bem-names';
 
 bemNames('block', 'element', ['mod1'], { mod2: true, mod3: false })
-// will return: 'block__element block__element--mod1 block__element--mod2'
+// 'block__element block__element--mod1 block__element--mod2'
 ```
 
-##### In-line usage (apply custom config)
+#### In-line usage (apply custom config)
 ```js
 import { customBemNames } from 'bem-names';
 
@@ -31,40 +45,55 @@ const states = { mod1: 'is-mod1' };
 const config = { separators, states };
 
 customBemNames(config, 'block', 'element', ['mod1'], { mod2: true, mod3: false })
-// will return: 'block-element is-mod1 block-element#mod2'
+// 'block-element is-mod1 block-element#mod2'
 ```
 
-##### Default config object (current state)
+#### Default config object (current state)
 ```js
 const defaultConfig = {
-  separators: { element: '__', modifier: '--' },
+  separators: { element: '__', modifier: '--', keyValue: '-' },
   states: {},
-  joinWith: '',
-  bemLike: true,
-  stringModifiers: false,
+  styles: {},
+  stylesPolicy: StylesPolicy.IGNORE,
+  joinWith: ' ',
+  bemLike: true, // treat first string as block and a second one as modifier.
+  keyValue: false,
+  stringModifiers: StringModifiers.THROW,
   parseModifier: defaultParseModifier, // (config:object, bemName:str, modifier:str) => string
 };
 ```
 
-* **bemLike** flag is treating first string as a block name and a second one as a element
-* **stringModifiers** flag allows to use strings as modifiers (sth. like classNames) with exception to first and second param (check *bemLike*)
+#### Enumerators (current state)
+```js
+export const StringModifiers = {
+  THROW: 'throw',
+  WARN: 'warn',
+  ALLOW: 'allow',
+  PASS_THROUGH: 'passThrough', // string values are not parsed and just joint at the end
+};
+```
 
-##### General approach to bemNames
+```js
+export const StylesPolicy = {
+  THROW: 'throw',
+  WARN: 'warn',
+  IGNORE: 'ignore',
+};
+
+```
+
+#### Preferred approach
 
 ```js
 import { bemNamesFactory } from 'bem-names';
 
-const separators = { modifier: '#', element: '-' };
-const states = { mod1: 'is-mod1' };
-const config = { separators, states };
-
 const bem = bemNamesFactory('block');
 
 bem('element')
-// will return: 'block__element block__element'
+// 'block__element block__element'
 
 bem('element', { mod1: true })
-// will return: 'block__element block__element--mod1'
+// 'block__element block__element--mod1'
 ```
 
 ##### with custom config
@@ -72,26 +101,29 @@ bem('element', { mod1: true })
 ```js
 import { bemNamesFactory } from 'bem-names';
 
-const separators = { modifier: '#', element: '-' };
-const states = { mod1: 'is-mod1' };
-const config = { separators, states };
+const config = {
+  separators = { element: '-' };
+  states = { mod1: 'is-mod1' };
+};
 
 const bem = bemNamesFactory('block', config);
 
 bem('element')
-// will return: 'block-element'
+// 'block-element'
 
 bem('element', { mod1: true })
-// will return: 'block-element is-mod1'
+// 'block-element is-mod1'
 ```
 
-##### emulate classNames like behaviour 
+#### Configuration samples
+
+##### emulate classNames like behaviour
 
 ```js
 import { bemNamesFactory } from 'bem-names';
 
-const config = { 
-  stringModifiers: true,
+const config = {
+  stringModifiers: StringModifiers.ALLOW,
   bemLike: false,
   parseModifier: (c, n, m) => m,
 };
@@ -99,6 +131,75 @@ const config = {
 const cn = (...args) => customBemNames(config, ...args);
 
 cn('block', 'element', { mod1: true, mod2; false }, ['mod3'], 'mod4')
-// will return: 'block element mod1 mod3 mod4'
+// 'block element mod1 mod3 mod4'
+
+```
+
+##### bem with regular classes
+
+```js
+import { bemNamesFactory } from 'bem-names';
+
+const config = {
+  stringModifiers: StringModifiers.PASS_THROUGH,
+};
+
+const cn = (...args) => customBemNames(config, ...args);
+
+cn('block', 'element', { mod1: true, mod2; false }, 'mod3')
+// 'block__element block__element--mod1 mod3'
+
+```
+
+##### bem with states
+
+```js
+import { bemNamesFactory } from 'bem-names';
+
+const config = {
+  states = { disabled: 'is-disable', values: 'has-values' },
+};
+
+const cn = (...args) => customBemNames(config, ...args);
+
+cn('block', { disabled: true, mod: true })
+// 'block is-disabled block--mod'
+
+```
+
+##### bem with keyValues
+
+```js
+import { bemNamesFactory } from 'bem-names';
+
+const config = {
+  keyValue = true,
+};
+
+const cn = (...args) => customBemNames(config, ...args);
+
+cn('block', { disabled: true, mod: false, key: 'value' })
+// 'block block--disabled block--key-value'
+
+```
+
+#####  css-modules
+
+```js
+import { bemNamesFactory } from 'bem-names';
+
+const config = {
+  styles: { block: '123', 'block--disabled': 234 }
+  stylesPolicy: StylesPolicy.WARN,
+};
+
+const cn = (...args) => customBemNames(config, ...args);
+
+cn('block', { disabled: true, mod: false })
+// '123 234'
+
+cn('block', { disabled: true, key: 'value' })
+// console: 'Key "key" is missing in styles'
+// '123 234'
 
 ```

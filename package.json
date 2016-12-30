@@ -1,7 +1,7 @@
 {
   "name": "bem-names",
-  "version": "0.3.1",
-  "description": "Simple generator of bem-like classNames",
+  "version": "0.4.0",
+  "description": "Ultimate generator of bem-like class names",
   "main": "dist/index.js",
   "scripts": {
     "test": "mocha --compilers js:babel-register './test.js'",

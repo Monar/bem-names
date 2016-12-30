@@ -4,7 +4,7 @@ import { assert } from 'chai';
 import {
   defaultConfig,
   StringModifiers,
-  CssModulePolicy,
+  StylesPolicy,
   defaultParseModifier,
   extractModifiers,
   bemNamesFactory,
@@ -215,24 +215,24 @@ describe('applyMods', function() {
     assert.equal(classNames, 'block block--super is-done');
   });
 
-  it('should work with cssModules', () => {
+  it('should work with styless', () => {
     const bemNames = 'block';
     const modifiers = [{ 'super': true }];
     const config = Object.assign({}, defaultConfig, {
-      cssModule: { block: '123', 'block--super': '234' },
-      cssModulePolicy: CssModulePolicy.THROW,
+      styles: { block: '123', 'block--super': '234' },
+      stylesPolicy: StylesPolicy.THROW,
     });
     const classNames = applyMods(config, bemNames, modifiers);
 
     assert.equal(classNames, '123 234');
   });
 
-  it('should throw when missing key in cssModules', () => {
+  it('should throw when missing key in styless', () => {
     const bemNames = 'block';
     const modifiers = [{ 'super': true, ok: true }];
     const config = Object.assign({}, defaultConfig, {
-      cssModule: { block: '123', 'block--super': '234' },
-      cssModulePolicy: CssModulePolicy.THROW,
+      styles: { block: '123', 'block--super': '234' },
+      stylesPolicy: StylesPolicy.THROW,
     });
     const fn = () => applyMods(config, bemNames, modifiers);
 
@@ -243,8 +243,8 @@ describe('applyMods', function() {
     const bemNames = 'block';
     const modifiers = [{ 'super': true, ok: true }];
     const config = Object.assign({}, defaultConfig, {
-      cssModule: { block: '123', 'block--super': '234' },
-      cssModulePolicy: CssModulePolicy.WARN,
+      styles: { block: '123', 'block--super': '234' },
+      stylesPolicy: StylesPolicy.WARN,
     });
 
     let result = '';
@@ -460,9 +460,9 @@ describe('bemNamesFactory', function() {
       'block block--www block--ok block--wee block--ups-value');
   });
 
-  it('should apply cssModule', () => {
-    const cssModule = { 'block--www': '123', block: '321' };
-    const config = { cssModule, cssModulePolicy: CssModulePolicy.THROW };
+  it('should apply styles', () => {
+    const styles = { 'block--www': '123', block: '321' };
+    const config = { styles, stylesPolicy: StylesPolicy.THROW };
 
     const factory = bemNamesFactory('block', config);
 

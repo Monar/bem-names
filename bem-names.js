@@ -6,7 +6,7 @@ export const StringModifiers = {
 };
 
 
-export const CssModulePolicy = {
+export const StylesPolicy = {
   THROW: 'throw',
   WARN: 'warn',
   IGNORE: 'ignore',
@@ -16,8 +16,8 @@ export const CssModulePolicy = {
 export const defaultConfig = {
   separators: { element: '__', modifier: '--', keyValue: '-' },
   states: {},
-  cssModule: {},
-  cssModulePolicy: CssModulePolicy.IGNORE,
+  styles: {},
+  stylesPolicy: StylesPolicy.IGNORE,
   joinWith: ' ',
   bemLike: true,
   keyValue: false,
@@ -63,8 +63,8 @@ export function applyMods(config, bemName, modifiers) {
     parseModifier,
     joinWith,
     stringModifiers,
-    cssModule,
-    cssModulePolicy,
+    styles,
+    stylesPolicy,
   } = config;
   let toExtract = modifiers;
   let toPass = [];
@@ -81,20 +81,20 @@ export function applyMods(config, bemName, modifiers) {
 
   let toJoin = [bemName].concat(parsed, toPass);
 
-  if (cssModulePolicy === CssModulePolicy.THROW) {
+  if (stylesPolicy === StylesPolicy.THROW) {
     toJoin = toJoin.map((key) => {
-      if (!(key in cssModule)) {
-        throw new Error(`Key ${key} is missing in cssModule`);
+      if (!(key in styles)) {
+        throw new Error(`Key ${key} is missing in styles`);
       }
-      return cssModule[key];
+      return styles[key];
     });
-  } else if (cssModulePolicy === CssModulePolicy.WARN) {
+  } else if (stylesPolicy === StylesPolicy.WARN) {
     toJoin = toJoin.map((key) => {
-      if (!(key in cssModule)) {
-        console.warn(`Key ${key} is missing in cssModule`);
+      if (!(key in styles)) {
+        console.warn(`Key ${key} is missing in styles`);
         return '';
       }
-      return cssModule[key];
+      return styles[key];
     });
   }
 
