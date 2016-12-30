@@ -7,10 +7,11 @@ export const StringModifiers = {
 
 
 export const defaultConfig = {
-  separators: { element: '__', modifier: '--' },
+  separators: { element: '__', modifier: '--', keyValue: '-' },
   states: {},
   joinWith: ' ',
   bemLike: true,
+  keyValue: false,
   stringModifiers: StringModifiers.THROW,
   parseModifier: defaultParseModifier,
 };
@@ -76,10 +77,19 @@ export function extractModifiers(config) {
     }
 
     if (typeof modifiers === 'object') {
-      Object.keys(modifiers)
+      const keys = Object.keys(modifiers)
         .map((key) => modifiers[key] ? key : null)
-        .filter((val) => val !== null)
-        .forEach((m) => extracted.add(m));
+        .filter((val) => val !== null);
+
+      let addModifier = (m) => extracted.add(m);
+
+      if (config.keyValue) {
+        const sep = config.separators.keyValue;
+        addModifier = (k) =>
+          extracted.add(isBoolean(modifiers[k]) ? k : k + sep + modifiers[k]);
+      }
+
+      keys.forEach(addModifier);
       return extracted;
     }
 
@@ -112,6 +122,11 @@ export function extractModifiers(config) {
 
 function isString(str) {
   return typeof str === 'string' || str instanceof String;
+}
+
+
+function isBoolean(val) {
+  return typeof val === 'boolean' || val instanceof Boolean;
 }
 
 

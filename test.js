@@ -48,8 +48,10 @@ describe('extractModifier', function() {
 
     const extract = extractModifiers(config);
 
-    const fn = () => extract(new Set(), 'string');
-    assert.doesNotThrow(fn, TypeError);
+    let result = false;
+    const fn = () => { result = extract(new Set(), 'string'); };
+    assert.doesNotThrow(fn, TypeError, 'don\'t throw');
+    assert.deepEqual(result, new Set(), 'does not add string to result');
   });
 
   it('should not add a string', () => {
@@ -99,6 +101,38 @@ describe('extractModifier', function() {
     const sample = { big: true };
     const result = extract(init, sample);
     assert.deepEqual(result, init);
+  });
+
+  it('should extract kevValue strings', () => {
+    const config = Object.assign(
+      {},
+      defaultConfig,
+      { keyValue: true }
+    );
+    const extract = extractModifiers(config);
+    const sample = { big: 'value' };
+    const result = extract(new Set(), sample);
+    assert.deepEqual(result, new Set(['big-value']));
+  });
+
+  it('should extract kevValue with custom separator', () => {
+    const config = Object.assign(
+      {},
+      defaultConfig,
+      { keyValue: true },
+      { separators: { keyValue: '@' } }
+    );
+    const extract = extractModifiers(config);
+    const sample = { big: 'value' };
+    const result = extract(new Set(), sample);
+    assert.deepEqual(result, new Set(['big@value']));
+  });
+
+  it('should extract kevValue with just key, when value is boolean', () => {
+    const extract = extractModifiers(defaultConfig);
+    const sample = { big: true };
+    const result = extract(new Set(), sample);
+    assert.deepEqual(result, new Set(['big']));
   });
 
 });
@@ -373,6 +407,16 @@ describe('bemNamesFactory', function() {
     assert.equal(
       factory(['www', 'ok'], 'test', { wee: true }, 'final'),
       'block www ok test wee final');
+  });
+
+  it('should allow basic keyValue modifiers', () => {
+    const config = { keyValue: true };
+
+    const factory = bemNamesFactory('block', config);
+
+    assert.equal(
+      factory(['www', 'ok'], { wee: true, ups: 'value', ni: false }),
+      'block block--www block--ok block--wee block--ups-value');
   });
 
 });
