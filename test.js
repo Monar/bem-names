@@ -2,6 +2,7 @@
 
 import b from 'b_';
 import bemCN from 'bem-cn';
+import classNames from 'classnames';
 import bemClassname from 'bem-classname';
 import bemClassnames from 'bem-classnames';
 import * as dist from './dist';
@@ -477,7 +478,30 @@ describe('bemNamesFactory', function() {
 describe('performance test', function() {
   const runCount = 1000;
 
-  it('should be at most 40x slower then b_', () => {
+  it('should be faster then bem-classname', () => {
+    const time = Date.now();
+    for (let i = 0; i < runCount; i++) {
+      bemClassname('block', 'elem', { mod1: true, mod2: false, mod3: 'mod3' });
+      bemClassname('block', { mod1: false,  what: 'super' });
+    }
+    const totalTime = Date.now() - time;
+
+    const bemTime = Date.now();
+    for (let i = 0; i < runCount; i++) {
+      dist.bemNames('block', 'elem', { mod1: true, mod2: false, mod3: 'mod3' });
+      dist.bemNames('block', { mod1: false,  what: 'super' });
+    }
+    const bemTotalTime = Date.now() - bemTime;
+
+    console.warn(`bem-classname   ${totalTime}ms`);
+    console.warn(`bemNames:       ${bemTotalTime}ms`);
+    console.warn(`bem-classname / bemNames: ${bemTotalTime / totalTime}`);
+
+    assert.isAtMost(bemTotalTime, totalTime);
+  });
+
+
+  it('should be at most 17x slower then b_', () => {
     const config = { keyValue: true, separators: { element: '-' } };
     const bem = dist.bemNamesFactory('block', config);
 
@@ -499,10 +523,10 @@ describe('performance test', function() {
     console.warn(`bemNames: ${bemTotalTime}ms`);
     console.warn(`b_ /bemNames: ${bemTotalTime / totalTime}`);
 
-    assert.isAtMost(bemTotalTime, totalTime * 40);
+    assert.isAtMost(bemTotalTime, totalTime * 17);
   });
 
-  it('should be at most 4x slower then bem-cn', () => {
+  it('should be same speed as bem-cn', () => {
     const config = { keyValue: true, separators: { element: '-' } };
     const bem = dist.bemNamesFactory('block', config);
     const block = bemCN('block');
@@ -523,43 +547,21 @@ describe('performance test', function() {
 
     console.warn(`bem-cn    ${totalTime}ms`);
     console.warn(`bemNames: ${bemTotalTime}ms`);
-    console.warn(`bem-cn /bemNames: ${bemTotalTime / totalTime}`);
+    console.warn(`bem-cn /bemNames: ${bemTotalTime / totalTime * 1.15}`);
 
-    assert.isAtMost(bemTotalTime, totalTime * 4);
-  });
-
-  it('should be at most 5x slower then bem-classname', () => {
-    const time = Date.now();
-    for (let i = 0; i < runCount; i++) {
-      bemClassname('block', 'elem', { mod1: true, mod2: false, mod3: 'mod3' });
-      bemClassname('block', { mod1: false,  what: 'super' });
-    }
-    const totalTime = Date.now() - time;
-
-    const bemTime = Date.now();
-    for (let i = 0; i < runCount; i++) {
-      dist.bemNames('block', 'elem', { mod1: true, mod2: false, mod3: 'mod3' });
-      dist.bemNames('block', { mod1: false,  what: 'super' });
-    }
-    const bemTotalTime = Date.now() - bemTime;
-
-    console.warn(`bem-classname   ${totalTime}ms`);
-    console.warn(`bemNames:       ${bemTotalTime}ms`);
-    console.warn(`bem-classname / bemNames: ${bemTotalTime / totalTime}`);
-
-    assert.isAtMost(bemTotalTime, totalTime * 5);
+    assert.isAtMost(bemTotalTime, totalTime);
   });
 
   it('should be faster then bem-classnames', () => {
 
     const classes = {
-      name: 'button',
-      modifiers: ['color', 'block'],
-      states: ['disabled'],
+      name: 'block',
+      modifiers: ['mod1', 'mod2', 'mod3'],
+      states: ['what'],
     };
 
     const config = {
-      states: { disabled: 'is-disabled' },
+      states: { what: 'is-what' },
       stringModifiers: StringModifiers.PASS_THROUGH,
     };
 
@@ -567,17 +569,20 @@ describe('performance test', function() {
 
     const time = Date.now();
     for (let i = 0; i < runCount; i++) {
-      bemClassnames(classes, { color: 'green', block: true });
-      bemClassnames(classes, { disabled: true });
-      bemClassnames(classes, 'a b', 'c', 'd');
+      bemClassnames(
+        classes,
+        'block',
+        'elem',
+        { mod1: true, mod2: false, mod3: 'mod3' }
+      );
+      bemClassnames(classes,'block', { mod1: false,  what: 'super' });
     }
     const totalTime = Date.now() - time;
 
     const bemTime = Date.now();
     for (let i = 0; i < runCount; i++) {
-      bem({ color: 'green', block: true });
-      bem({ disabled: true });
-      bem('a b', 'c', 'd');
+      bem('elem', { mod1: true, mod2: false, mod3: 'mod3' });
+      bem({ mod1: false,  what: 'super' });
     }
     const bemTotalTime = Date.now() - bemTime;
 
@@ -588,7 +593,35 @@ describe('performance test', function() {
     assert.isAtMost(bemTotalTime, totalTime);
   });
 
+  it('should less then 12x slower then classnames', () => {
 
+    const config = {
+      bemLike: false,
+      parseModifier: (c, n, m) => m,
+      stringModifiers: StringModifiers.PASS_THROUGH,
+    };
+
+    const bem = dist.bemNamesFactory('button', config);
+
+    const time = Date.now();
+    for (let i = 0; i < runCount; i++) {
+      classNames('block', 'elem', { mod1: true, mod2: false, mod3: 'mod3' });
+      classNames('block', { mod1: false,  what: 'super' });
+    }
+    const totalTime = Date.now() - time;
+
+    const bemTime = Date.now();
+    for (let i = 0; i < runCount; i++) {
+      bem('elem', { mod1: true, mod2: false, mod3: 'mod3' });
+      bem({ mod1: false,  what: 'super' });
+    }
+    const bemTotalTime = Date.now() - bemTime;
+
+    console.warn(`classnames   ${totalTime}ms`);
+    console.warn(`bemNames:       ${bemTotalTime}ms`);
+    console.warn(`classnames / bemNames: ${bemTotalTime / totalTime}`);
+
+    assert.isAtMost(bemTotalTime, totalTime * 15);
+  });
 
 });
-

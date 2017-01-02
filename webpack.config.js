@@ -11,6 +11,7 @@ module.exports = {
     path: __dirname + "/dist",
     filename: "index.js",
   },
+  externals: ['moize'],
   module: {
     rules: [
       {

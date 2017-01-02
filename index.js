@@ -1,15 +1,15 @@
 import {
-  bemNames,
-  customBemNames,
+  moizedBemNames as bemNames,
+  moizedCustomBemNames as customBemNames,
   bemNamesFactory,
   StringModifiers,
   CssModulePolicy,
 } from './bem-names';
 
 export {
-  bemNamesFactory,
   bemNames,
   customBemNames,
+  bemNamesFactory,
   StringModifiers,
   CssModulePolicy,
 };

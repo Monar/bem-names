@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/Monar/bem-names.svg?branch=master)](https://travis-ci.org/Monar/bem-names)
 [![npm version](https://badge.fury.io/js/bem-names.svg)](https://badge.fury.io/js/bem-names)
 
-Ultimate generator of bem-like class names. bemNames can follow any BEM naming
+Advance generator of bem-like class names. bemNames can follow any BEM naming
 convention and allow easy transition between any of them. It supports
 transition in and out from classic
 [classNames](https://www.npmjs.com/package/classnames) as well as
@@ -23,6 +23,10 @@ npm install bem-names --save
 
 Expect some changes, and stable release around beginning of January 2017!
 As of version `0.4.0` it's mostly feature complete.
+
+Version `0.5.0` uses [moize](https://www.npmjs.com/package/moize) for
+memoization. In upcoming days I'll evaluate this solution. Check the
+[performance](#performance) section to see why memoization might be a good idea.
 
 ### How it works (general idea)
 
@@ -203,3 +207,16 @@ cn('block', { disabled: true, key: 'value' })
 // '123 234'
 
 ```
+
+### Performance
+I've performed some performance tests. Each packaged received same parameters,
+and bemNames was configured to match output for each of the packages.
+
+
+| x |1K [ms] |1K bemNames@v0.4.0  [ms] |1K bemNames@v0.5.0  [ms] |
+|:-:|:-:|:-:|:-:|
+|b_              | 1   | 31 | 14 |
+|bem-classname   | 12  | 27 | 6  |
+|bem-classanmes  | 44  | 35 | 7  |
+|bem-cn          | 11  | 27 | 7  |
+|classnames      | 3   | 23 | 9  |

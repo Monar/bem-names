@@ -1,3 +1,6 @@
+import moize from 'moize';
+
+
 export const StringModifiers = {
   THROW: 'throw',
   WARN: 'warn',
@@ -25,20 +28,28 @@ export const defaultConfig = {
   parseModifier: defaultParseModifier,
 };
 
+export const moizedBemNames = moize(bemNames);
 export function bemNames(...args) {
-  return customBemNames(defaultConfig, ...args);
+  return moizedCustomBemNamesInner(defaultConfig, args[0], args.slice(1));
 }
 
 
-export function bemNamesFactory(block, config={}){
+export function bemNamesFactory(block, customConfig={}){
   if (!isString(block)) {
     throw TypeError(`block name: "${block}" is not a string`);
   }
 
-  return (...args) => customBemNames(config, block, ...args);
+  const config = {
+    ...defaultConfig,
+    ...customConfig,
+    separators: { ...defaultConfig.separators, ...customConfig.separators },
+  };
+
+  return (...args) => moizedCustomBemNamesInner(config, block, args);
 }
 
 
+export const moizedCustomBemNames = moize(customBemNames);
 export function customBemNames(customConfig, block, ...args) {
   const config = {
     ...defaultConfig,
@@ -46,6 +57,12 @@ export function customBemNames(customConfig, block, ...args) {
     separators: { ...defaultConfig.separators, ...customConfig.separators },
   };
 
+  return moizedCustomBemNamesInner(config, block, args);
+}
+
+
+export const moizedCustomBemNamesInner = moize(customBemNamesInner);
+export function customBemNamesInner(config, block, args=[]) {
   if (!config.bemLike) {
     return applyMods(config, '', [block].concat(args));
   }
@@ -71,7 +88,7 @@ export function applyMods(config, bemName, modifiers) {
   let toPass = [];
 
   if (stringModifiers === StringModifiers.PASS_THROUGH) {
-    toPass = modifiers.filter((mod) => isString(mod));
+    toPass = modifiers.filter(isString);
   }
 
   const extracted = toExtract.reduce(extractModifiers(config), new Set());
