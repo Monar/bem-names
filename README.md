@@ -6,7 +6,7 @@
 Advance generator of bem-like class names. bemNames can follow any BEM naming
 convention and allow easy transition between any of them. It supports
 transition in and out from classic
-[classNames](https://www.npmjs.com/package/classnames) as well as
+[classnames](https://www.npmjs.com/package/classnames) as well as
 [css-Modules](https://github.com/css-modules/css-modules).
 
 ### Install
