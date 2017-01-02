@@ -5,6 +5,9 @@
   "parserOptions": {
     "ecmaVersion": 7,
     "sourceType": "module",
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true
+    }
   },
   "rules": {
     "indent": ["error", 2, {"SwitchCase": 1}], // one indent === 2 spaces

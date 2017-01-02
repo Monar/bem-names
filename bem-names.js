@@ -25,7 +25,6 @@ export const defaultConfig = {
   parseModifier: defaultParseModifier,
 };
 
-
 export function bemNames(...args) {
   return customBemNames(defaultConfig, ...args);
 }
@@ -40,10 +39,12 @@ export function bemNamesFactory(block, config={}){
 }
 
 
-export  function customBemNames(customConfig, block, ...args) {
-  const separators =
-    Object.assign({}, defaultConfig.separators, customConfig.separators);
-  const config = Object.assign({}, defaultConfig, customConfig, { separators });
+export function customBemNames(customConfig, block, ...args) {
+  const config = {
+    ...defaultConfig,
+    ...customConfig,
+    separators: { ...defaultConfig.separators, ...customConfig.separators },
+  };
 
   if (!config.bemLike) {
     return applyMods(config, '', [block].concat(args));

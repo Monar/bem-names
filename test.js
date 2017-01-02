@@ -34,11 +34,10 @@ describe('extractModifier', function() {
   });
 
   it('should throw for string', () => {
-    const config = Object.assign(
-      {},
-      defaultConfig,
-      { stringModifiers: StringModifiers.THROW }
-    );
+    const config = {
+      ...defaultConfig,
+      stringModifiers: StringModifiers.THROW,
+    };
 
     const extract = extractModifiers(config);
 
@@ -47,11 +46,10 @@ describe('extractModifier', function() {
   });
 
   it('should not throw for string, but print to console', () => {
-    const config = Object.assign(
-      {},
-      defaultConfig,
-      { stringModifiers: StringModifiers.WARN }
-    );
+    const config = {
+      ...defaultConfig,
+      stringModifiers: StringModifiers.WARN,
+    };
 
     const extract = extractModifiers(config);
 
@@ -62,11 +60,10 @@ describe('extractModifier', function() {
   });
 
   it('should not add a string', () => {
-    const config = Object.assign(
-      {},
-      defaultConfig,
-      { stringModifiers: StringModifiers.ALLOW }
-    );
+    const config = {
+      ...defaultConfig,
+      stringModifiers: StringModifiers.ALLOW,
+    };
 
     const extract = extractModifiers(config);
     const result =  extract(new Set(), 'string');
@@ -75,11 +72,10 @@ describe('extractModifier', function() {
   });
 
   it('should omit a string', () => {
-    const config = Object.assign(
-      {},
-      defaultConfig,
-      { stringModifiers: StringModifiers.PASS_THROUGH }
-    );
+    const config = {
+      ...defaultConfig,
+      stringModifiers: StringModifiers.PASS_THROUGH,
+    };
 
     const extract = extractModifiers(config);
     const result =  extract(new Set(), 'string');
@@ -111,11 +107,10 @@ describe('extractModifier', function() {
   });
 
   it('should extract kevValue strings', () => {
-    const config = Object.assign(
-      {},
-      defaultConfig,
-      { keyValue: true }
-    );
+    const config = {
+      ...defaultConfig,
+      keyValue: true,
+    };
     const extract = extractModifiers(config);
     const sample = { big: 'value' };
     const result = extract(new Set(), sample);
@@ -123,12 +118,11 @@ describe('extractModifier', function() {
   });
 
   it('should extract kevValue with custom separator', () => {
-    const config = Object.assign(
-      {},
-      defaultConfig,
-      { keyValue: true },
-      { separators: { keyValue: '@' } }
-    );
+    const config = {
+      ...defaultConfig,
+      keyValue: true,
+      separators: { keyValue: '@' },
+    };
     const extract = extractModifiers(config);
     const sample = { big: 'value' };
     const result = extract(new Set(), sample);
@@ -149,21 +143,19 @@ describe('defaultParseModifier', function() {
   it('should create proper bem modifier', () => {
     const bemNames = 'block__element';
     const modifier = 'super';
-    const config = Object.assign({}, defaultConfig, {
-      states: {},
-      separators: { element: '__', modifier: '--' },
-    });
-    const parsedModifier = defaultParseModifier(config, bemNames, modifier);
+    const parsedModifier =
+      defaultParseModifier(defaultConfig, bemNames, modifier);
     assert.equal(parsedModifier, 'block__element--super');
   });
 
   it('should return string based on states map', () => {
     const bemNames = 'block__element';
     const modifier = 'ok';
-    const config = Object.assign({}, defaultConfig, {
+    const config = {
+      ...defaultConfig,
       states: { ok: 'is-ok' },
       separators: { element: '__', modifier: '--' },
-    });
+    };
     const parsedModifier = defaultParseModifier(config, bemNames, modifier);
 
     assert.equal(parsedModifier, 'is-ok');
@@ -189,9 +181,10 @@ describe('applyMods', function() {
       { ok: true, disabled: false, negative: false },
       [ 'done'],
     ];
-    const config = Object.assign({}, defaultConfig, {
+    const config = {
+      ...defaultConfig,
       states: { ok: 'is-ok', done: 'is-done', negative: 'is-negative' },
-    });
+    };
     const classNames = applyMods(config, bemNames, modifiers);
 
     assert.equal(classNames, 'block block--super is-ok is-done');
@@ -200,10 +193,11 @@ describe('applyMods', function() {
   it('should handle stringModifiers', () => {
     const bemNames = 'block';
     const modifiers = ['super', 'double', ['done']];
-    const config = Object.assign({}, defaultConfig, {
+    const config = {
+      ...defaultConfig,
       states: { done: 'is-done' },
       stringModifiers: StringModifiers.ALLOW,
-    });
+    };
     const classNames = applyMods(config, bemNames, modifiers);
 
     assert.equal(classNames, 'block block--super block--double is-done');
@@ -212,10 +206,11 @@ describe('applyMods', function() {
   it('should handle uniqueModifiers', () => {
     const bemNames = 'block';
     const modifiers = [{ 'super': false }, 'super', ['done'], { done: false } ];
-    const config = Object.assign({}, defaultConfig, {
+    const config = {
+      ...defaultConfig,
       states: { done: 'is-done' },
       stringModifiers: StringModifiers.ALLOW,
-    });
+    };
     const classNames = applyMods(config, bemNames, modifiers);
 
     assert.equal(classNames, 'block block--super is-done');
@@ -224,10 +219,11 @@ describe('applyMods', function() {
   it('should work with styless', () => {
     const bemNames = 'block';
     const modifiers = [{ 'super': true }];
-    const config = Object.assign({}, defaultConfig, {
+    const config = {
+      ...defaultConfig,
       styles: { block: '123', 'block--super': '234' },
       stylesPolicy: StylesPolicy.THROW,
-    });
+    };
     const classNames = applyMods(config, bemNames, modifiers);
 
     assert.equal(classNames, '123 234');
@@ -236,10 +232,11 @@ describe('applyMods', function() {
   it('should throw when missing key in styless', () => {
     const bemNames = 'block';
     const modifiers = [{ 'super': true, ok: true }];
-    const config = Object.assign({}, defaultConfig, {
+    const config = {
+      ...defaultConfig,
       styles: { block: '123', 'block--super': '234' },
       stylesPolicy: StylesPolicy.THROW,
-    });
+    };
     const fn = () => applyMods(config, bemNames, modifiers);
 
     assert.throws(fn, Error);
@@ -248,10 +245,11 @@ describe('applyMods', function() {
   it('should not throw and omit modifier and print to console', () => {
     const bemNames = 'block';
     const modifiers = [{ 'super': true, ok: true }];
-    const config = Object.assign({}, defaultConfig, {
+    const config = {
+      ...defaultConfig,
       styles: { block: '123', 'block--super': '234' },
       stylesPolicy: StylesPolicy.WARN,
-    });
+    };
 
     let result = '';
     const fn = () => { result = applyMods(config, bemNames, modifiers); };
@@ -316,11 +314,10 @@ describe('customBemNames', function() {
     const block = 'block';
     const element = 'element';
     const modifiers = [ ['super'], 'just_a_string' ];
-    const config = Object.assign(
-      {},
-      defaultConfig,
-      { stringModifiers: StringModifiers.PASS_THROUGH }
-    );
+    const config = {
+      ...defaultConfig,
+      stringModifiers: StringModifiers.PASS_THROUGH,
+    };
 
     const result = customBemNames(config, block, element, ...modifiers);
 
