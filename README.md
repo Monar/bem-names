@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/Monar/bem-names.svg?branch=master)](https://travis-ci.org/Monar/bem-names)
 [![npm version](https://badge.fury.io/js/bem-names.svg)](https://badge.fury.io/js/bem-names)
 
-Advance generator of bem-like class names. bemNames can follow any BEM naming
+Advance generator of bem-like class names. `bemNames` can follow any BEM naming
 convention and allow easy transition between any of them. It supports
 transition in and out from classic
 [classnames](https://www.npmjs.com/package/classnames) as well as
@@ -26,7 +26,7 @@ As of version `0.4.0` it's mostly feature complete.
 
 Version `0.5.0` uses [moize](https://www.npmjs.com/package/moize) for
 memoization. In upcoming days I'll evaluate this solution. Check the
-[performance](#performance) section to see why memoization might be a good idea.
+[performance](#performance) section to see why I've added memoization.
 
 ### How it works (general idea)
 
@@ -55,15 +55,15 @@ customBemNames(config, 'block', 'element', ['mod1'], { mod2: true, mod3: false }
 #### Default config object (current state)
 ```js
 const defaultConfig = {
+  bemLike: true, // treat first string as block and a second one as modifier.
   separators: { element: '__', modifier: '--', keyValue: '-' },
   states: {},
-  styles: {},
-  stylesPolicy: StylesPolicy.IGNORE,
   joinWith: ' ',
-  bemLike: true, // treat first string as block and a second one as modifier.
   keyValue: false,
   stringModifiers: StringModifiers.THROW,
   parseModifier: defaultParseModifier, // (config:object, bemName:str, modifier:str) => string
+  styles: {},
+  stylesPolicy: StylesPolicy.IGNORE,
 };
 ```
 
@@ -124,7 +124,7 @@ bem('element', { mod1: true })
 ##### emulate classNames like behaviour
 
 ```js
-import { bemNamesFactory } from 'bem-names';
+import { bemNamesFactory, StringModifiers } from 'bem-names';
 
 const config = {
   stringModifiers: StringModifiers.ALLOW,
@@ -142,7 +142,7 @@ cn('block', 'element', { mod1: true, mod2; false }, ['mod3'], 'mod4')
 ##### bem with regular classes
 
 ```js
-import { bemNamesFactory } from 'bem-names';
+import { bemNamesFactory, StringModifiers } from 'bem-names';
 
 const config = {
   stringModifiers: StringModifiers.PASS_THROUGH,
@@ -190,7 +190,7 @@ cn('block', { disabled: true, mod: false, key: 'value' })
 #####  css-modules
 
 ```js
-import { bemNamesFactory } from 'bem-names';
+import { bemNamesFactory, StylesPolicy } from 'bem-names';
 
 const config = {
   styles: { block: '123', 'block--disabled': 234 }
@@ -213,10 +213,10 @@ I've performed some performance tests. Each packaged received same parameters,
 and bemNames was configured to match output for each of the packages.
 
 
-| x |1K [ms] |1K bemNames@v0.4.0  [ms] |1K bemNames@v0.5.0  [ms] |
-|:-:|:-:|:-:|:-:|
-|b_              | 1   | 31 | 14 |
-|bem-classname   | 12  | 27 | 6  |
-|bem-classanmes  | 44  | 35 | 7  |
-|bem-cn          | 11  | 27 | 7  |
-|classnames      | 3   | 23 | 9  |
+| |1K |bemNames@v0.5.0 |bemNames@v0.4.0 |
+|:-:|--:|--:|--:|
+|b_              | 1ms   | 14ms | 31ms  |
+|bem-classname   | 12ms  | 6ms  | 27ms  |
+|bem-classanmes  | 44ms  | 7ms  | 35ms  |
+|bem-cn          | 11ms  | 7ms  | 27ms  |
+|classnames      | 3ms   | 9ms  | 23ms  |
