@@ -1,6 +1,6 @@
 {
   "name": "bem-names",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Advance generator of bem-like class names",
   "main": "dist/index.js",
   "scripts": {
