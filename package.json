@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "mocha --compilers js:babel-register './test.js'",
-    "build": "webpack",
     "speed": "node ./test-speed.js",
+    "build": "webpack -p",
     "lint": "eslint ."
   },
   "keywords": [

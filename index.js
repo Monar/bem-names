@@ -1,6 +1,6 @@
 import {
-  moizedBemNames as bemNames,
-  moizedCustomBemNames as customBemNames,
+  bemNames,
+  customBemNames,
   bemNamesFactory,
   StringModifiers,
   CssModulePolicy,

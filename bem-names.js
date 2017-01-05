@@ -1,6 +1,3 @@
-import moize from 'moize';
-
-
 export const StringModifiers = {
   THROW: 'throw',
   WARN: 'warn',
@@ -28,9 +25,8 @@ export const defaultConfig = {
   parseModifier: defaultParseModifier,
 };
 
-export const moizedBemNames = moize(bemNames);
 export function bemNames(...args) {
-  return moizedCustomBemNamesInner(defaultConfig, args[0], args.slice(1));
+  return customBemNamesInner(defaultConfig, args[0], args.slice(1));
 }
 
 
@@ -45,11 +41,10 @@ export function bemNamesFactory(block, customConfig={}){
     separators: { ...defaultConfig.separators, ...customConfig.separators },
   };
 
-  return (...args) => moizedCustomBemNamesInner(config, block, args);
+  return (...args) => customBemNamesInner(config, block, args);
 }
 
 
-export const moizedCustomBemNames = moize(customBemNames);
 export function customBemNames(customConfig, block, ...args) {
   const config = {
     ...defaultConfig,
@@ -57,11 +52,10 @@ export function customBemNames(customConfig, block, ...args) {
     separators: { ...defaultConfig.separators, ...customConfig.separators },
   };
 
-  return moizedCustomBemNamesInner(config, block, args);
+  return customBemNamesInner(config, block, args);
 }
 
 
-export const moizedCustomBemNamesInner = moize(customBemNamesInner);
 export function customBemNamesInner(config, block, args=[]) {
   if (!config.bemLike) {
     return applyMods(config, '', [block].concat(args));
