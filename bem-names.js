@@ -109,7 +109,7 @@ export function applyMods(config, bemName, modifiers) {
     toJoin = toJoin.reduce((acc, key) => {
       if (!(key in styles)) {
         console.warn(`Key ${key} is missing in styles`);
-	return acc;
+        return acc;
       }
       acc.push(styles[key]);
       return acc;
