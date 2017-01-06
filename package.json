@@ -1,6 +1,6 @@
 {
   "name": "bem-names",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Advance generator of bem-like class names",
   "main": "dist/index.js",
   "scripts": {
@@ -35,8 +35,5 @@
     "eslint": "3.12.2",
     "mocha": "3.2.0",
     "webpack": "2.2.0-rc.3"
-  },
-  "dependencies": {
-    "moize": "1.3.3"
   }
 }

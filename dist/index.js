@@ -208,6 +208,7 @@ function applyMods(config, bemName, modifiers) {
     toJoin = toJoin.reduce(function (acc, key) {
       if (!(key in styles)) {
         console.warn('Key ' + key + ' is missing in styles');
+        return acc;
       }
       acc.push(styles[key]);
       return acc;
@@ -234,7 +235,8 @@ function extractModifiers(config) {
 
           if (modifiers[key]) {
             if (config.keyValue) {
-              extracted[isBoolean(modifiers[key]) ? key : key + sep + modifiers[key]] = null;
+              var val = isBoolean(modifiers[key]) ? key : key + sep + modifiers[key];
+              extracted[val] = null;
             } else {
               extracted[key] = null;
             }

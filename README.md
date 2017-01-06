@@ -22,11 +22,12 @@ npm install bem-names --save
 ### It's under development so be warned!!!
 
 Expect some changes, and stable release around beginning of January 2017!
-As of version `0.4.0` it's mostly feature complete.
 
-Version `0.5.0` uses [moize](https://www.npmjs.com/package/moize) for
-memoization. In upcoming days I'll evaluate this solution. Check the
-[performance](#performance) section to see why I've added memoization.
+##### changes
+ * `0.4.0` is mostly feature complete.
+ * `0.5.0` uses [moize](https://www.npmjs.com/package/moize) for
+memoization. This lazy attempt of optimalization dit not quite hit the mark.
+ * `0.6.0` drops memoization, and focus on improving speed, check the [performance](#performance) section.
 
 ### How it works (general idea)
 
@@ -213,10 +214,10 @@ I've performed some performance tests. Each packaged received same parameters,
 and bemNames was configured to match output for each of the packages.
 
 
-| |1K |bemNames@v0.5.0 |bemNames@v0.4.0 |
-|:-:|--:|--:|--:|
-|b_              | 1ms   | 14ms | 31ms  |
-|bem-classname   | 12ms  | 6ms  | 27ms  |
-|bem-classanmes  | 44ms  | 7ms  | 35ms  |
-|bem-cn          | 11ms  | 7ms  | 27ms  |
-|classnames      | 3ms   | 9ms  | 23ms  |
+| |10K | 10k - bemNames |
+|:-:|--:|--:|
+|b_              | 2ms   | 18ms |
+|bem-classname   | 18ms  | 17ms  |
+|bem-classanmes  | 72ms  | 14ms  |
+|bem-cn          | 23ms  | 17ms  |
+|classnames      | 4ms   | 17ms  |
