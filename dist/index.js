@@ -1,1 +1,315 @@
-module.exports=function(e){function r(n){if(t[n])return t[n].exports;var o=t[n]={i:n,l:!1,exports:{}};return e[n].call(o.exports,o,o.exports,r),o.l=!0,o.exports}var t={};return r.m=e,r.c=t,r.i=function(e){return e},r.d=function(e,t,n){r.o(e,t)||Object.defineProperty(e,t,{configurable:!1,enumerable:!0,get:n})},r.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return r.d(t,"a",t),t},r.o=function(e,r){return Object.prototype.hasOwnProperty.call(e,r)},r.p="",r(r.s=1)}([function(e,r,t){"use strict";function n(){for(var e=arguments.length,r=Array(e),t=0;t<e;t++)r[t]=arguments[t];return s(b,r[0],r.slice(1))}function o(e){var r=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{};if(!f(e))throw TypeError('block name: "'+e+'" is not a string');var t=d({},b,r,{separators:d({},b.separators,r.separators)});return function(){for(var r=arguments.length,n=Array(r),o=0;o<r;o++)n[o]=arguments[o];return s(t,e,n)}}function i(e,r){for(var t=d({},b,e,{separators:d({},b.separators,e.separators)}),n=arguments.length,o=Array(n>2?n-2:0),i=2;i<n;i++)o[i-2]=arguments[i];return s(t,r,o)}function s(e,r){var t=arguments.length>2&&void 0!==arguments[2]?arguments[2]:[];if(!e.bemLike)return a(e,"",[r].concat(t));if(f(t[0])){var n=r+e.separators.element+t[0];return a(e,n,t.slice(1))}return a(e,r,t)}function a(e,r,t){var n=e.parseModifier,o=e.joinWith,i=e.stringModifiers,s=e.styles,a=e.stylesPolicy,c=t,l=[];i===y.PASS_THROUGH&&(l=t.filter(f));var m=c.reduce(u(e),new Set),d=Array.from(m).map(function(t){return n(e,r,t)}),b=[r].concat(d,l);return a===p.THROW?b=b.map(function(e){if(!(e in s))throw new Error("Key "+e+" is missing in styles");return s[e]}):a===p.WARN&&(b=b.map(function(e){return e in s?s[e]:(console.warn("Key "+e+" is missing in styles"),"")})),b.filter(function(e){return""!==e}).join(o)}function u(e){return function(r,t){if(Array.isArray(t))return t.forEach(function(e){return r.add(e)}),r;if("object"===("undefined"==typeof t?"undefined":m(t))){var n=Object.keys(t).map(function(e){return t[e]?e:null}).filter(function(e){return null!==e}),o=function(e){return r.add(e)};return e.keyValue&&!function(){var n=e.separators.keyValue;o=function(e){return r.add(c(t[e])?e:e+n+t[e])}}(),n.forEach(o),r}if(!f(t))throw new TypeError('Provided modifiers: "'+t+'" is not supported');switch(e.stringModifiers){case y.ALLOW:r.add(t);break;case y.THROW:throw new TypeError('Provided modifier "'+t+'" is now allowed!');case y.WARN:console.warn('Provided modifier "'+t+'" is now allowed!');break;case y.PASS_THROUGH:}return r}}function f(e){return"string"==typeof e||e instanceof String}function c(e){return"boolean"==typeof e||e instanceof Boolean}function l(e,r,t){return t in e.states?e.states[t]:r+e.separators.modifier+t}Object.defineProperty(r,"__esModule",{value:!0});var m="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},d=Object.assign||function(e){for(var r=1;r<arguments.length;r++){var t=arguments[r];for(var n in t)Object.prototype.hasOwnProperty.call(t,n)&&(e[n]=t[n])}return e};r.bemNames=n,r.bemNamesFactory=o,r.customBemNames=i,r.customBemNamesInner=s,r.applyMods=a,r.extractModifiers=u,r.defaultParseModifier=l;var y=r.StringModifiers={THROW:"throw",WARN:"warn",ALLOW:"allow",PASS_THROUGH:"passThrough"},p=r.StylesPolicy={THROW:"throw",WARN:"warn",IGNORE:"ignore"},b=r.defaultConfig={separators:{element:"__",modifier:"--",keyValue:"-"},states:{},styles:{},stylesPolicy:p.IGNORE,joinWith:" ",bemLike:!0,keyValue:!1,stringModifiers:y.THROW,parseModifier:l}},function(e,r,t){"use strict";Object.defineProperty(r,"__esModule",{value:!0}),r.CssModulePolicy=r.StringModifiers=r.bemNamesFactory=r.customBemNames=r.bemNames=void 0;var n=t(0);r.bemNames=n.bemNames,r.customBemNames=n.customBemNames,r.bemNamesFactory=n.bemNamesFactory,r.StringModifiers=n.StringModifiers,r.CssModulePolicy=n.CssModulePolicy,r.default=n.bemNames}]);
+module.exports =
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+
+
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+
+/******/ 	// identity function for calling harmony imports with the correct context
+/******/ 	__webpack_require__.i = function(value) { return value; };
+
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+exports.bemNames = bemNames;
+exports.bemNamesFactory = bemNamesFactory;
+exports.customBemNames = customBemNames;
+exports.customBemNamesInner = customBemNamesInner;
+exports.applyMods = applyMods;
+exports.extractModifiers = extractModifiers;
+exports.defaultParseModifier = defaultParseModifier;
+var StringModifiers = exports.StringModifiers = {
+  THROW: 'throw',
+  WARN: 'warn',
+  ALLOW: 'allow',
+  PASS_THROUGH: 'passThrough'
+};
+
+var StylesPolicy = exports.StylesPolicy = {
+  THROW: 'throw',
+  WARN: 'warn',
+  IGNORE: 'ignore'
+};
+
+var defaultConfig = exports.defaultConfig = {
+  separators: { element: '__', modifier: '--', keyValue: '-' },
+  states: {},
+  styles: {},
+  stylesPolicy: StylesPolicy.IGNORE,
+  joinWith: ' ',
+  bemLike: true,
+  keyValue: false,
+  stringModifiers: StringModifiers.THROW,
+  parseModifier: defaultParseModifier
+};
+
+function bemNames() {
+  for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+
+  return customBemNamesInner(defaultConfig, args[0], args.slice(1));
+}
+
+function bemNamesFactory(block) {
+  var customConfig = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  if (!isString(block)) {
+    throw TypeError('block name: "' + block + '" is not a string');
+  }
+
+  var config = _extends({}, defaultConfig, customConfig, {
+    separators: _extends({}, defaultConfig.separators, customConfig.separators)
+  });
+
+  return function () {
+    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
+    }
+
+    return customBemNamesInner(config, block, args);
+  };
+}
+
+function customBemNames(customConfig, block) {
+  var config = _extends({}, defaultConfig, customConfig, {
+    separators: _extends({}, defaultConfig.separators, customConfig.separators)
+  });
+
+  for (var _len3 = arguments.length, args = Array(_len3 > 2 ? _len3 - 2 : 0), _key3 = 2; _key3 < _len3; _key3++) {
+    args[_key3 - 2] = arguments[_key3];
+  }
+
+  return customBemNamesInner(config, block, args);
+}
+
+function customBemNamesInner(config, block) {
+  var args = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+
+  if (!config.bemLike) {
+    return applyMods(config, '', [block].concat(args));
+  }
+
+  if (isString(args[0])) {
+    var bemName = block + config.separators.element + args.shift();
+    return applyMods(config, bemName, args);
+  }
+
+  return applyMods(config, block, args);
+}
+
+function applyMods(config, bemName, modifiers) {
+  var parseModifier = config.parseModifier,
+      joinWith = config.joinWith,
+      stringModifiers = config.stringModifiers,
+      styles = config.styles,
+      stylesPolicy = config.stylesPolicy;
+
+  var toExtract = modifiers;
+  var toPass = [];
+
+  if (stringModifiers === StringModifiers.PASS_THROUGH) {
+    toPass = modifiers.filter(isString);
+  }
+
+  var extracted = toExtract.reduce(extractModifiers(config), {});
+
+  var parsed = Object.keys(extracted).map(function (mod) {
+    return parseModifier(config, bemName, mod);
+  });
+
+  var toJoin = [];
+  if (bemName === '') {
+    toJoin = toJoin.concat(parsed, toPass);
+  } else {
+    toJoin = [bemName].concat(parsed, toPass);
+  }
+
+  if (stylesPolicy === StylesPolicy.THROW) {
+    toJoin = toJoin.map(function (key) {
+      if (!(key in styles)) {
+        throw new Error('Key ' + key + ' is missing in styles');
+      }
+      return styles[key];
+    });
+  } else if (stylesPolicy === StylesPolicy.WARN) {
+    // fix formating
+    toJoin = toJoin.reduce(function (acc, key) {
+      if (!(key in styles)) {
+        console.warn('Key ' + key + ' is missing in styles');
+      }
+      acc.push(styles[key]);
+      return acc;
+    }, []);
+  }
+
+  return toJoin.join(joinWith);
+}
+
+function extractModifiers(config) {
+  return function (extracted, modifiers) {
+
+    if (Array.isArray(modifiers)) {
+      modifiers.forEach(function (m) {
+        return extracted[m] = null;
+      });
+      return extracted;
+    }
+
+    if ((typeof modifiers === 'undefined' ? 'undefined' : _typeof(modifiers)) === 'object') {
+      var _ret = function () {
+        var sep = config.separators.keyValue;
+        var objecExtrac = function objecExtrac(key) {
+
+          if (modifiers[key]) {
+            if (config.keyValue) {
+              extracted[isBoolean(modifiers[key]) ? key : key + sep + modifiers[key]] = null;
+            } else {
+              extracted[key] = null;
+            }
+          }
+        };
+
+        Object.keys(modifiers).forEach(objecExtrac);
+        return {
+          v: extracted
+        };
+      }();
+
+      if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+    }
+
+    if (!isString(modifiers)) {
+      throw new TypeError('Provided modifiers: "' + modifiers + '" is not supported');
+    }
+
+    switch (config.stringModifiers) {
+      case StringModifiers.ALLOW:
+        extracted[modifiers] = null;
+        break;
+
+      case StringModifiers.THROW:
+        throw new TypeError('Provided modifier "' + modifiers + '" is now allowed!');
+
+      case StringModifiers.WARN:
+        console.warn('Provided modifier "' + modifiers + '" is now allowed!');
+        break;
+
+      case StringModifiers.PASS_THROUGH:
+        break;
+    }
+
+    return extracted;
+  };
+}
+
+function isString(str) {
+  return typeof str === 'string' || str instanceof String;
+}
+
+function isBoolean(val) {
+  return typeof val === 'boolean' || val instanceof Boolean;
+}
+
+function defaultParseModifier(config, bemName, modifier) {
+  if (modifier in config.states) {
+    return config.states[modifier];
+  }
+
+  return bemName + config.separators.modifier + modifier;
+}
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.CssModulePolicy = exports.StringModifiers = exports.bemNamesFactory = exports.customBemNames = exports.bemNames = undefined;
+
+var _bemNames = __webpack_require__(0);
+
+exports.bemNames = _bemNames.bemNames;
+exports.customBemNames = _bemNames.customBemNames;
+exports.bemNamesFactory = _bemNames.bemNamesFactory;
+exports.StringModifiers = _bemNames.StringModifiers;
+exports.CssModulePolicy = _bemNames.CssModulePolicy;
+exports.default = _bemNames.bemNames;
+
+/***/ }
+/******/ ]);

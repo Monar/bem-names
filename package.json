@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha --compilers js:babel-register './test.js'",
     "speed": "node ./test-speed.js",
-    "build": "webpack -p",
+    "build": "webpack",
     "lint": "eslint ."
   },
   "keywords": [

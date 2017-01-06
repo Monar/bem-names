@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const b = require('b_');
 const bemCN  = require('bem-cn');
 const classNames  = require('classnames');

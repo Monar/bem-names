@@ -62,13 +62,12 @@ export function customBemNamesInner(config, block, args=[]) {
   }
 
   if (isString(args[0])) {
-    const bemName = block + config.separators.element + args[0];
-    return applyMods(config, bemName, args.slice(1));
+    const bemName = block + config.separators.element + args.shift();
+    return applyMods(config, bemName, args);
   }
 
   return applyMods(config, block, args);
 }
-
 
 export function applyMods(config, bemName, modifiers) {
   const {
@@ -85,13 +84,18 @@ export function applyMods(config, bemName, modifiers) {
     toPass = modifiers.filter(isString);
   }
 
-  const extracted = toExtract.reduce(extractModifiers(config), new Set());
+  const extracted = toExtract.reduce(extractModifiers(config), {});
 
-  const parsed = Array.from(extracted).map(
+  const parsed = Object.keys(extracted).map(
     (mod) => parseModifier(config, bemName, mod)
   );
 
-  let toJoin = [bemName].concat(parsed, toPass);
+  let toJoin = [];
+  if (bemName === '') {
+    toJoin = toJoin.concat(parsed, toPass);
+  } else {
+    toJoin = [bemName].concat(parsed, toPass);
+  }
 
   if (stylesPolicy === StylesPolicy.THROW) {
     toJoin = toJoin.map((key) => {
@@ -101,40 +105,44 @@ export function applyMods(config, bemName, modifiers) {
       return styles[key];
     });
   } else if (stylesPolicy === StylesPolicy.WARN) {
-    toJoin = toJoin.map((key) => {
+    // fix formating
+    toJoin = toJoin.reduce((acc, key) => {
       if (!(key in styles)) {
         console.warn(`Key ${key} is missing in styles`);
-        return '';
+	return acc;
       }
-      return styles[key];
-    });
+      acc.push(styles[key]);
+      return acc;
+    }, []);
   }
 
-  return toJoin.filter((s) => s !== '').join(joinWith);
+  return toJoin.join(joinWith);
 }
-
 
 export function extractModifiers(config) {
   return (extracted, modifiers) => {
+
     if (Array.isArray(modifiers)) {
-      modifiers.forEach((m) => extracted.add(m));
+      modifiers.forEach((m) => extracted[m] = null);
       return extracted;
     }
 
     if (typeof modifiers === 'object') {
-      const keys = Object.keys(modifiers)
-        .map((key) => modifiers[key] ? key : null)
-        .filter((val) => val !== null);
+      const sep = config.separators.keyValue;
+      const objecExtrac = (key) => {
 
-      let addModifier = (m) => extracted.add(m);
+        if (modifiers[key]) {
+          if (config.keyValue) {
+            const val =
+              isBoolean(modifiers[key]) ? key : key + sep + modifiers[key];
+            extracted[val] = null;
+          } else {
+            extracted[key] = null;
+          }
+        }
+      };
 
-      if (config.keyValue) {
-        const sep = config.separators.keyValue;
-        addModifier = (k) =>
-          extracted.add(isBoolean(modifiers[k]) ? k : k + sep + modifiers[k]);
-      }
-
-      keys.forEach(addModifier);
+      Object.keys(modifiers).forEach(objecExtrac);
       return extracted;
     }
 
@@ -146,7 +154,7 @@ export function extractModifiers(config) {
 
     switch(config.stringModifiers) {
       case StringModifiers.ALLOW:
-        extracted.add(modifiers);
+        extracted[modifiers] = null;
         break;
 
       case StringModifiers.THROW:

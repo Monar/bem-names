@@ -23,7 +23,7 @@ describe('extractModifier', function() {
 
   it('should throw for incorrect type', () => {
     const extract = extractModifiers(defaultConfig);
-    const fn = () => extract(new Set(), null);
+    const fn = () => extract({}, null);
     assert.throws(fn, TypeError);
   });
 
@@ -35,7 +35,7 @@ describe('extractModifier', function() {
 
     const extract = extractModifiers(config);
 
-    const fn = () => extract(new Set(), 'string');
+    const fn = () => extract({}, 'string');
     assert.throws(fn, TypeError);
   });
 
@@ -48,9 +48,9 @@ describe('extractModifier', function() {
     const extract = extractModifiers(config);
 
     let result = false;
-    const fn = () => { result = extract(new Set(), 'string'); };
+    const fn = () => { result = extract({}, 'string'); };
     assert.doesNotThrow(fn, TypeError, 'don\'t throw');
-    assert.deepEqual(result, new Set(), 'does not add string to result');
+    assert.deepEqual(result, {}, 'does not add string to result');
   });
 
   it('should not add a string', () => {
@@ -60,9 +60,9 @@ describe('extractModifier', function() {
     };
 
     const extract = extractModifiers(config);
-    const result =  extract(new Set(), 'string');
+    const result =  extract({}, 'string');
 
-    assert.deepEqual(result, new Set(['string']));
+    assert.deepEqual(result, { string: null });
   });
 
   it('should omit a string', () => {
@@ -72,29 +72,29 @@ describe('extractModifier', function() {
     };
 
     const extract = extractModifiers(config);
-    const result =  extract(new Set(), 'string');
+    const result =  extract({}, 'string');
 
-    assert.deepEqual(result, new Set());
+    assert.deepEqual(result, {});
   });
 
   it('should return matching set', () => {
     const extract = extractModifiers(defaultConfig);
     const sample = ['blue', 'big'];
 
-    const result = extract(new Set(), sample);
-    assert.deepEqual(result, new Set(sample));
+    const result = extract({}, sample);
+    assert.deepEqual(result, { blue: null, big: null });
   });
 
   it('should return set of elements with positive value', () => {
     const extract = extractModifiers(defaultConfig);
     const sample = { blue: false, big: 'that should be true' };
-    const result = extract(new Set(), sample);
-    assert.deepEqual(result, new Set(['big']));
+    const result = extract({}, sample);
+    assert.deepEqual(result, { big: null });
   });
 
   it('should return set without duplicates', () => {
     const extract = extractModifiers(defaultConfig);
-    const init = new Set(['big']);
+    const init = { big: null };
     const sample = { big: true };
     const result = extract(init, sample);
     assert.deepEqual(result, init);
@@ -107,8 +107,8 @@ describe('extractModifier', function() {
     };
     const extract = extractModifiers(config);
     const sample = { big: 'value' };
-    const result = extract(new Set(), sample);
-    assert.deepEqual(result, new Set(['big-value']));
+    const result = extract({}, sample);
+    assert.deepEqual(result, { 'big-value': null });
   });
 
   it('should extract kevValue with custom separator', () => {
@@ -119,15 +119,15 @@ describe('extractModifier', function() {
     };
     const extract = extractModifiers(config);
     const sample = { big: 'value' };
-    const result = extract(new Set(), sample);
-    assert.deepEqual(result, new Set(['big@value']));
+    const result = extract({}, sample);
+    assert.deepEqual(result, { 'big@value': null });
   });
 
   it('should extract kevValue with just key, when value is boolean', () => {
     const extract = extractModifiers(defaultConfig);
     const sample = { big: true };
-    const result = extract(new Set(), sample);
-    assert.deepEqual(result, new Set(['big']));
+    const result = extract({}, sample);
+    assert.deepEqual(result, { big: null });
   });
 
 });
