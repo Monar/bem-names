@@ -6,58 +6,140 @@
 Advance generator of bem-like class names. `bemNames` can follow any BEM naming
 convention and allow easy transition between any of them. It supports
 transition in and out from classic
-[classnames](https://www.npmjs.com/package/classnames) as well as
+[classnames][classnames] as well as
 [css-Modules](https://github.com/css-modules/css-modules).
 
-### Install
+## Install
 
 ```bash
 yarn add bem-names
-```
-
-```bash
 npm install bem-names --save
 ```
 
-### It's under development so be warned!!!
+## Basic usage
 
-Expect some changes, and stable release around beginning of January 2017!
+The `bemNames` function takes any number of arguments which can be a string,
+array or object. First two strings are threted respectivly as block and element
+names. All returned modifiers are unique (no duplicates).
 
-##### changes
- * `0.4.0` is mostly feature complete.
- * `0.5.0` uses [moize](https://www.npmjs.com/package/moize) for
-memoization. This lazy attempt of optimalization dit not quite hit the mark.
- * `0.6.0` drops memoization, and focus on improving speed, check the [performance](#performance) section.
- * `0.7.0` polishing code, change StringPolicy and StylesPolicy to WARN. Now
-   `styles` has undefined value and to start working with css-modules you just
-   need to assign `styles` object in config.
-
-### How it works (general idea)
-
-All returned modifiers are unique (no duplicates).
-
-#### Basic in-line usage (default BEM naming convention)
 ```js
 import bemNames from 'bem-names';
 
-bemNames('block', 'element', ['mod1'], { mod2: true, mod3: false });
-// 'block__element block__element--mod1 block__element--mod2'
+bemNames('block'); // block
+bemNames('block', ['mod']); // block block--mod
+bemNames('block', 'element', ['mod']); // block__element block__element--mod
+bemNames('block', 'element', { mod2: true, mod3: false }); // 'block__element block__element--mod2'
+bemNames('block', 'element', ['mod3'], { mod3: false }); // 'block__element block__element--mod3'
+bemNames('block', ['mod3'], { mod3: true }); // 'block block--mod3'
 ```
 
-#### In-line usage (apply custom config)
+With factory:
+
+```js
+import { bemNamesFactory } from 'bem-names';
+
+const bem = bemNamesFactory('block');
+
+bem(); // block
+bem(['mod']); // block block--mod
+bem('element', ['mod']); // block__element block__element--mod
+bem('element', { mod2: true, mod3: false }); // 'block__element block__element--mod2'
+bem('element', ['mod3'], { mod3: false }); // 'block__element block__element--mod3'
+bem(['mod3'], { mod3: true }); // 'block block--mod3'
+```
+
+Check [advance usage](#advance-usage)
+
+## Motivation
+
+When I tried to add component from [npm](https://www.npmjs.com/) to project
+following one of BEM-naming conventions I've encounter two obstacles:
+
+* There was a class name collision with existing components
+* The component followed different class naming convention, and did not fit
+  with existing [scss](http://sass-lang.com/) helper functions.
+
+
+Ideal solution would be if the component had an option to pass a class name
+generator (same way I'm  working in the mentioned project). Unfortunately this
+was not the case, so I've decided to change it. First step write such flexible
+generator, with option to apply
+[css-modules](https://github.com/css-modules/css-modules) in the near future.
+
+
+Done :D
+
+### Other projects
+
+There are many great generators of BEM-like class names. But neither of them
+can be applied as such generic generator covering various conventions. Below
+are few  project I've tested.
+
+* **[bem-classname](https://www.npmjs.com/package/bem-classname)** Very basic
+generator covering single convention.
+
+* **[bem-classnames](https://www.npmjs.com/package/bem-classnames)** Basic
+generator covering single convention with troublesome need of setting up
+configuration for every component. The slowest of presented here.
+
+* **[b_](https://www.npmjs.com/package/b_)** Very fast generator allowing basic
+configuration but limited to two BEM variations.
+
+* **[bem-cn](https://www.npmjs.com/package/bem-cn)** Versatile BEM class name
+generator. Does not have flexible API allowing to apply other conventions.
+Personally prefer API similar to "classic" [classnames][classnames].
+
+* **[classnames](https://www.npmjs.com/package/bem-cn)** Good class name
+generator but with no support for BEM. :]
+
+### Performance
+I've performed some performance tests. Each packaged received same parameters,
+and bemNames was configured to match output for each of the packages.
+
+
+| |10K | bemNames |
+|:-:|--:|:-:|
+|b_              | 2ms   | 18ms |
+|bem-classname   | 18ms  | 17ms  |
+|bem-classanmes  | 72ms  | 14ms  |
+|bem-cn          | 23ms  | 17ms  |
+|classnames      | 4ms   | 17ms  |
+
+
+## Advance usage
+
+`bemNames` was create with castomization in mind. Configuration object is
+merged with the default configuration so there is no need to specify all of the
+options every time.
+
 ```js
 import { customBemNames } from 'bem-names';
 
 const config = {
-  separators = { modifier: '#', element: '-' },
+  separators: { element: '-' },
   states = { mod1: 'is-mod1' },
 };
 
-customBemNames(config, 'block', 'element', ['mod1'], { mod2: true, mod3: false });
-// 'block-element is-mod1 block-element#mod2'
+customBemNames(config, 'block', 'element', ['mod1']); // 'block-element is-mod1'
 ```
 
-#### Default config object (current state)
+The `customBemNames` is created for in-line usage, for more generic approuch there is `bemNamesFactory`.
+
+```js
+import { bemNamesFactory } from 'bem-names';
+
+const config = {
+  separators: { element: '-' },
+  states = { mod1: 'is-mod1' },
+};
+
+const bem = bemNamesFactory('block', config);
+
+bem('element', ['mod1']); // 'block-element is-mod1'
+```
+
+### Config object
+
 ```js
 const defaultConfig = {
   bemLike: true, // treat first string as block and a second one as modifier.
@@ -105,7 +187,7 @@ bem('element', { mod1: true });
 // 'block__element block__element--mod1'
 ```
 
-##### with custom config
+##### Advance usage
 
 ```js
 import { bemNamesFactory } from 'bem-names';
@@ -212,15 +294,4 @@ cn('block', { disabled: true, key: 'value' });
 
 ```
 
-### Performance
-I've performed some performance tests. Each packaged received same parameters,
-and bemNames was configured to match output for each of the packages.
-
-
-| |10K | 10k - bemNames |
-|:-:|--:|--:|
-|b_              | 2ms   | 18ms |
-|bem-classname   | 18ms  | 17ms  |
-|bem-classanmes  | 72ms  | 14ms  |
-|bem-cn          | 23ms  | 17ms  |
-|classnames      | 4ms   | 17ms  |
+[classnames]: https://www.npmjs.com/package/classnames
