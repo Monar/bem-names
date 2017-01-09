@@ -22,7 +22,6 @@
     "quote-props": ["error", "as-needed", {"keywords": true}], // use quotes in param names only when needed eg 'l-o-l'
     "arrow-parens": ["error", "always"], // always force using parens in arrow functions
     "curly": ["error"], // always use curly braces in if, for, etc. statements
-    "eqeqeq": ["error", "always"], // always use === or !== instead of == or !=
     "no-console": ["error", { allow: ["error", "warn"] }]
   },
   "env": {

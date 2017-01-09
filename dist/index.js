@@ -105,8 +105,8 @@ var StylesPolicy = exports.StylesPolicy = {
 var defaultConfig = exports.defaultConfig = {
   separators: { element: '__', modifier: '--', keyValue: '-' },
   states: {},
-  styles: {},
-  stylesPolicy: StylesPolicy.IGNORE,
+  styles: undefined,
+  stylesPolicy: StylesPolicy.THROW,
   joinWith: ' ',
   bemLike: true,
   keyValue: false,
@@ -183,7 +183,7 @@ function applyMods(config, bemName, modifiers) {
     toPass = modifiers.filter(isString);
   }
 
-  var extracted = toExtract.reduce(extractModifiers(config), {});
+  var extracted = toExtract.reduce(extractModifiers.bind(null, config), {});
 
   var parsed = Object.keys(extracted).map(function (mod) {
     return parseModifier(config, bemName, mod);
@@ -196,92 +196,112 @@ function applyMods(config, bemName, modifiers) {
     toJoin = [bemName].concat(parsed, toPass);
   }
 
-  if (stylesPolicy === StylesPolicy.THROW) {
-    toJoin = toJoin.map(function (key) {
-      if (!(key in styles)) {
-        throw new Error('Key ' + key + ' is missing in styles');
-      }
-      return styles[key];
-    });
-  } else if (stylesPolicy === StylesPolicy.WARN) {
-    // fix formating
-    toJoin = toJoin.reduce(function (acc, key) {
-      if (!(key in styles)) {
-        console.warn('Key ' + key + ' is missing in styles');
-        return acc;
-      }
-      acc.push(styles[key]);
-      return acc;
-    }, []);
+  if (styles != undefined) {
+    toJoin = applyStyles(toJoin, styles, stylesPolicy);
   }
 
   return toJoin.join(joinWith);
 }
 
-function extractModifiers(config) {
-  return function (extracted, modifiers) {
-
-    if (Array.isArray(modifiers)) {
-      modifiers.forEach(function (m) {
-        return extracted[m] = null;
-      });
-      return extracted;
-    }
-
-    if ((typeof modifiers === 'undefined' ? 'undefined' : _typeof(modifiers)) === 'object') {
-      var _ret = function () {
-        var sep = config.separators.keyValue;
-        var objecExtrac = function objecExtrac(key) {
-
-          if (modifiers[key]) {
-            if (config.keyValue) {
-              var val = isBoolean(modifiers[key]) ? key : key + sep + modifiers[key];
-              extracted[val] = null;
-            } else {
-              extracted[key] = null;
-            }
-          }
-        };
-
-        Object.keys(modifiers).forEach(objecExtrac);
-        return {
-          v: extracted
-        };
-      }();
-
-      if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-    }
-
-    if (!isString(modifiers)) {
-      throw new TypeError('Provided modifiers: "' + modifiers + '" is not supported');
-    }
-
-    switch (config.stringModifiers) {
-      case StringModifiers.ALLOW:
-        extracted[modifiers] = null;
-        break;
-
-      case StringModifiers.THROW:
-        throw new TypeError('Provided modifier "' + modifiers + '" is now allowed!');
-
-      case StringModifiers.WARN:
-        console.warn('Provided modifier "' + modifiers + '" is now allowed!');
-        break;
-
-      case StringModifiers.PASS_THROUGH:
-        break;
-    }
-
-    return extracted;
+function applyStyles(toJoin, styles, stylesPolicy) {
+  var fn = function fn(i) {
+    return i;
   };
+
+  switch (stylesPolicy) {
+    case StylesPolicy.IGNORE:
+      fn = function fn(acc, key) {
+        return key in styles ? acc.push(styles[key]) && acc : acc;
+      };
+      break;
+
+    case StylesPolicy.WARN:
+      fn = function fn(acc, key) {
+        if (key in styles) {
+          acc.push(styles[key]);
+        } else {
+          console.warn('Key ' + key + ' is missing in styles');
+        }
+        return acc;
+      };
+      break;
+
+    case StylesPolicy.THROW:
+      fn = function fn(acc, key) {
+        if (key in styles) {
+          acc.push(styles[key]);
+        } else {
+          throw new Error('Key ' + key + ' is missing in styles');
+        }
+        return acc;
+      };
+      break;
+  }
+
+  return toJoin.reduce(fn, []);
 }
 
+function extractModifiers(config, extracted, modifiers) {
+  if (Array.isArray(modifiers)) {
+    modifiers.forEach(function (m) {
+      return extracted[m] = null;
+    });
+    return extracted;
+  }
+
+  if ((typeof modifiers === 'undefined' ? 'undefined' : _typeof(modifiers)) == 'object') {
+    var _ret = function () {
+      var sep = config.separators.keyValue;
+      var objecExtrac = function objecExtrac(key) {
+
+        if (modifiers[key]) {
+          if (config.keyValue) {
+            var val = isBoolean(modifiers[key]) ? key : key + sep + modifiers[key];
+            extracted[val] = null;
+          } else {
+            extracted[key] = null;
+          }
+        }
+      };
+
+      Object.keys(modifiers).forEach(objecExtrac);
+      return {
+        v: extracted
+      };
+    }();
+
+    if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+  }
+
+  if (!isString(modifiers)) {
+    throw new TypeError('Provided modifiers: "' + modifiers + '" is not supported');
+  }
+
+  switch (config.stringModifiers) {
+    case StringModifiers.ALLOW:
+      extracted[modifiers] = null;
+      break;
+
+    case StringModifiers.THROW:
+      throw new TypeError('Provided modifier "' + modifiers + '" is now allowed!');
+
+    case StringModifiers.WARN:
+      console.warn('Provided modifier "' + modifiers + '" is now allowed!');
+      break;
+
+    case StringModifiers.PASS_THROUGH:
+      break;
+  }
+
+  return extracted;
+};
+
 function isString(str) {
-  return typeof str === 'string' || str instanceof String;
+  return typeof str == 'string' || str instanceof String;
 }
 
 function isBoolean(val) {
-  return typeof val === 'boolean' || val instanceof Boolean;
+  return typeof val == 'boolean' || val instanceof Boolean;
 }
 
 function defaultParseModifier(config, bemName, modifier) {

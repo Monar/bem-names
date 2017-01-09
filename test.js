@@ -10,6 +10,7 @@ import {
   bemNamesFactory,
   customBemNames,
   applyMods,
+  applyStyles,
   bemNames,
 } from './bem-names';
 
@@ -77,7 +78,7 @@ describe('extractModifier', function() {
     assert.deepEqual(result, {});
   });
 
-  it('should return matching set', () => {
+  it('should return same values', () => {
     const extract = extractModifiers(defaultConfig);
     const sample = ['blue', 'big'];
 
@@ -157,6 +158,49 @@ describe('defaultParseModifier', function() {
 
 });
 
+describe('applyStyles', function() {
+
+  it('should throw for unknown stylesPolicy', () => {
+    const toJoin = ['block', 'block--super'];
+    const styles = { block: 'xxx' };
+    const stylesPolicy = 'laskdjfasdlkfjasdf';
+
+    const fn = () => applyStyles(toJoin, styles, stylesPolicy);
+
+    assert.throws(fn, Error);
+  });
+
+  it('should ignore missing styles', () => {
+    const toJoin = ['block', 'block--super'];
+    const styles = { block: 'xxx' };
+    const stylesPolicy = StylesPolicy.IGNORE;
+
+    const result = applyStyles(toJoin, styles, stylesPolicy);
+
+    assert.deepEqual(result, ['xxx']);
+  });
+
+  it('should ignore and print warning for missing styles', () => {
+    const toJoin = ['block', 'block--super'];
+    const styles = { block: 'xxx' };
+    const stylesPolicy = StringModifiers.WARN;
+
+    const result = applyStyles(toJoin, styles, stylesPolicy);
+
+    assert.deepEqual(result, ['xxx']);
+  });
+
+  it('should throw for missing styles', () => {
+    const toJoin = ['block', 'block--super'];
+    const styles = { block: 'xxx' };
+    const stylesPolicy = StringModifiers.THROW;
+
+    const fn = () => applyStyles(toJoin, styles, stylesPolicy);
+
+    assert.throws(fn, Error);
+  });
+});
+
 describe('applyMods', function() {
 
   it('should generate proper classNames (no states)', () => {
@@ -216,14 +260,27 @@ describe('applyMods', function() {
     const config = {
       ...defaultConfig,
       styles: { block: '123', 'block--super': '234' },
-      stylesPolicy: StylesPolicy.THROW,
     };
     const classNames = applyMods(config, bemNames, modifiers);
 
     assert.equal(classNames, '123 234');
   });
 
-  it('should throw when missing key in styless', () => {
+  it('should omit all and print warn for empty object styles', () => {
+    const bemNames = 'block';
+    const modifiers = [{ 'super': true, ok: true }];
+    const config = {
+      ...defaultConfig,
+      styles: {},
+    };
+    let result = undefined;
+    const fn = () => { result = applyMods(config, bemNames, modifiers); };
+
+    assert.doesNotThrow(fn, Error, 'does not throws');
+    assert.equal(result, '', 'omits ok');
+  });
+
+  it('should throw when missing key in styles', () => {
     const bemNames = 'block';
     const modifiers = [{ 'super': true, ok: true }];
     const config = {
@@ -252,6 +309,34 @@ describe('applyMods', function() {
     assert.equal(result, '123 234', 'omits ok');
   });
 
+  it('should not throw and omit modifier', () => {
+    const bemNames = 'block';
+    const modifiers = [{ 'super': true, ok: true }];
+    const config = {
+      ...defaultConfig,
+      styles: { block: '123', 'block--super': '234' },
+      stylesPolicy: StylesPolicy.IGNORE,
+    };
+
+    let result = '';
+    const fn = () => { result = applyMods(config, bemNames, modifiers); };
+
+    assert.doesNotThrow(fn, Error, 'does not throws');
+    assert.equal(result, '123 234', 'omits ok');
+  });
+
+  it('should omit every modifier for empty styles and ignore policy', () => {
+    const bemNames = 'block';
+    const modifiers = [{ 'super': true, ok: true }];
+    const config = {
+      ...defaultConfig,
+      styles: {},
+      stylesPolicy: StylesPolicy.IGNORE,
+    };
+
+    let result = applyMods(config, bemNames, modifiers);
+    assert.equal(result, '');
+  });
 
 });
 

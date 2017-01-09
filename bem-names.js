@@ -16,12 +16,12 @@ export const StylesPolicy = {
 export const defaultConfig = {
   separators: { element: '__', modifier: '--', keyValue: '-' },
   states: {},
-  styles: {},
-  stylesPolicy: StylesPolicy.IGNORE,
+  styles: undefined,
+  stylesPolicy: StylesPolicy.WARN,
   joinWith: ' ',
   bemLike: true,
   keyValue: false,
-  stringModifiers: StringModifiers.THROW,
+  stringModifiers: StringModifiers.WARN,
   parseModifier: defaultParseModifier,
 };
 
@@ -97,27 +97,51 @@ export function applyMods(config, bemName, modifiers) {
     toJoin = [bemName].concat(parsed, toPass);
   }
 
-  if (stylesPolicy === StylesPolicy.THROW) {
-    toJoin = toJoin.map((key) => {
-      if (!(key in styles)) {
-        throw new Error(`Key ${key} is missing in styles`);
-      }
-      return styles[key];
-    });
-  } else if (stylesPolicy === StylesPolicy.WARN) {
-    // fix formating
-    toJoin = toJoin.reduce((acc, key) => {
-      if (!(key in styles)) {
-        console.warn(`Key ${key} is missing in styles`);
-        return acc;
-      }
-      acc.push(styles[key]);
-      return acc;
-    }, []);
+  if (styles != undefined) {
+    toJoin = applyStyles(toJoin, styles, stylesPolicy);
   }
 
   return toJoin.join(joinWith);
 }
+
+
+export function applyStyles(toJoin, styles, stylesPolicy) {
+  let fn = undefined;
+
+  switch(stylesPolicy) {
+    case StylesPolicy.IGNORE:
+      fn = (acc, key) => key in styles ? acc.push(styles[key]) && acc : acc;
+      break;
+
+    case StylesPolicy.WARN:
+      fn = (acc, key) => {
+        if(key in styles) {
+          acc.push(styles[key]);
+        } else {
+          console.warn(`Key ${key} is missing in styles`);
+        }
+        return acc;
+      };
+      break;
+
+    case StylesPolicy.THROW:
+      fn = (acc, key) => {
+        if(key in styles) {
+          acc.push(styles[key]);
+        } else {
+          throw new Error(`Key ${key} is missing in styles`);
+        }
+        return acc;
+      };
+      break;
+
+    default:
+      throw new Error(`StylePolicy: "${stylesPolicy}" has invalid value`);
+  }
+
+  return toJoin.reduce(fn, []);
+}
+
 
 export function extractModifiers(config) {
   return (extracted, modifiers) => {
@@ -127,10 +151,9 @@ export function extractModifiers(config) {
       return extracted;
     }
 
-    if (typeof modifiers === 'object') {
+    if (typeof modifiers == 'object') {
       const sep = config.separators.keyValue;
       const objecExtrac = (key) => {
-
         if (modifiers[key]) {
           if (config.keyValue) {
             const val =
@@ -174,12 +197,12 @@ export function extractModifiers(config) {
 
 
 function isString(str) {
-  return typeof str === 'string' || str instanceof String;
+  return typeof str == 'string' || str instanceof String;
 }
 
 
 function isBoolean(val) {
-  return typeof val === 'boolean' || val instanceof Boolean;
+  return typeof val == 'boolean' || val instanceof Boolean;
 }
 
 
