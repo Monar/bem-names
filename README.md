@@ -28,6 +28,9 @@ Expect some changes, and stable release around beginning of January 2017!
  * `0.5.0` uses [moize](https://www.npmjs.com/package/moize) for
 memoization. This lazy attempt of optimalization dit not quite hit the mark.
  * `0.6.0` drops memoization, and focus on improving speed, check the [performance](#performance) section.
+ * `0.7.0` polishing code, change StringPolicy and StylesPolicy to WARN. Now
+   `styles` has undefined value and to start working with css-modules you just
+   need to assign `styles` object in config.
 
 ### How it works (general idea)
 
@@ -37,7 +40,7 @@ All returned modifiers are unique (no duplicates).
 ```js
 import bemNames from 'bem-names';
 
-bemNames('block', 'element', ['mod1'], { mod2: true, mod3: false })
+bemNames('block', 'element', ['mod1'], { mod2: true, mod3: false });
 // 'block__element block__element--mod1 block__element--mod2'
 ```
 
@@ -45,11 +48,12 @@ bemNames('block', 'element', ['mod1'], { mod2: true, mod3: false })
 ```js
 import { customBemNames } from 'bem-names';
 
-const separators = { modifier: '#', element: '-' };
-const states = { mod1: 'is-mod1' };
-const config = { separators, states };
+const config = {
+  separators = { modifier: '#', element: '-' },
+  states = { mod1: 'is-mod1' },
+};
 
-customBemNames(config, 'block', 'element', ['mod1'], { mod2: true, mod3: false })
+customBemNames(config, 'block', 'element', ['mod1'], { mod2: true, mod3: false });
 // 'block-element is-mod1 block-element#mod2'
 ```
 
@@ -61,10 +65,10 @@ const defaultConfig = {
   states: {},
   joinWith: ' ',
   keyValue: false,
-  stringModifiers: StringModifiers.THROW,
+  stringModifiers: StringModifiers.WARN,
   parseModifier: defaultParseModifier, // (config:object, bemName:str, modifier:str) => string
-  styles: {},
-  stylesPolicy: StylesPolicy.IGNORE,
+  styles: undefined,
+  stylesPolicy: StylesPolicy.WARN,
 };
 ```
 
@@ -94,10 +98,10 @@ import { bemNamesFactory } from 'bem-names';
 
 const bem = bemNamesFactory('block');
 
-bem('element')
+bem('element');
 // 'block__element block__element'
 
-bem('element', { mod1: true })
+bem('element', { mod1: true });
 // 'block__element block__element--mod1'
 ```
 
@@ -107,16 +111,16 @@ bem('element', { mod1: true })
 import { bemNamesFactory } from 'bem-names';
 
 const config = {
-  separators = { element: '-' };
-  states = { mod1: 'is-mod1' };
+  separators = { element: '-' },
+  states = { mod1: 'is-mod1' },
 };
 
 const bem = bemNamesFactory('block', config);
 
-bem('element')
+bem('element');
 // 'block-element'
 
-bem('element', { mod1: true })
+bem('element', { mod1: true });
 // 'block-element is-mod1'
 ```
 
@@ -135,7 +139,7 @@ const config = {
 
 const cn = (...args) => customBemNames(config, ...args);
 
-cn('block', 'element', { mod1: true, mod2; false }, ['mod3'], 'mod4')
+cn('block', 'element', { mod1: true, mod2: false }, ['mod3'], 'mod4');
 // 'block element mod1 mod3 mod4'
 
 ```
@@ -151,7 +155,7 @@ const config = {
 
 const cn = (...args) => customBemNames(config, ...args);
 
-cn('block', 'element', { mod1: true, mod2; false }, 'mod3')
+cn('block', 'element', { mod1: true, mod2: false }, 'mod3');
 // 'block__element block__element--mod1 mod3'
 
 ```
@@ -167,7 +171,7 @@ const config = {
 
 const cn = (...args) => customBemNames(config, ...args);
 
-cn('block', { disabled: true, mod: true })
+cn('block', { disabled: true, mod: true });
 // 'block is-disabled block--mod'
 
 ```
@@ -183,7 +187,7 @@ const config = {
 
 const cn = (...args) => customBemNames(config, ...args);
 
-cn('block', { disabled: true, mod: false, key: 'value' })
+cn('block', { disabled: true, mod: false, key: 'value' });
 // 'block block--disabled block--key-value'
 
 ```
@@ -194,16 +198,16 @@ cn('block', { disabled: true, mod: false, key: 'value' })
 import { bemNamesFactory, StylesPolicy } from 'bem-names';
 
 const config = {
-  styles: { block: '123', 'block--disabled': 234 }
+  styles: { block: '123', 'block--disabled': 234 },
   stylesPolicy: StylesPolicy.WARN,
 };
 
 const cn = (...args) => customBemNames(config, ...args);
 
-cn('block', { disabled: true, mod: false })
+cn('block', { disabled: true, mod: false });
 // '123 234'
 
-cn('block', { disabled: true, key: 'value' })
+cn('block', { disabled: true, key: 'value' });
 // console: 'Key "key" is missing in styles'
 // '123 234'
 
