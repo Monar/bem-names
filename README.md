@@ -11,11 +11,11 @@ transition in and out from classic
 
 ### Install
 
-```sh
+```bash
 yarn add bem-names
 ```
 
-```sh
+```bash
 npm install bem-names --save
 ```
 
@@ -199,7 +199,6 @@ import { bemNamesFactory, StylesPolicy } from 'bem-names';
 
 const config = {
   styles: { block: '123', 'block--disabled': 234 },
-  stylesPolicy: StylesPolicy.WARN,
 };
 
 const cn = (...args) => customBemNames(config, ...args);

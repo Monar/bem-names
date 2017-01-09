@@ -87,6 +87,7 @@ exports.bemNamesFactory = bemNamesFactory;
 exports.customBemNames = customBemNames;
 exports.customBemNamesInner = customBemNamesInner;
 exports.applyMods = applyMods;
+exports.applyStyles = applyStyles;
 exports.extractModifiers = extractModifiers;
 exports.defaultParseModifier = defaultParseModifier;
 var StringModifiers = exports.StringModifiers = {
@@ -106,11 +107,11 @@ var defaultConfig = exports.defaultConfig = {
   separators: { element: '__', modifier: '--', keyValue: '-' },
   states: {},
   styles: undefined,
-  stylesPolicy: StylesPolicy.THROW,
+  stylesPolicy: StylesPolicy.WARN,
   joinWith: ' ',
   bemLike: true,
   keyValue: false,
-  stringModifiers: StringModifiers.THROW,
+  stringModifiers: StringModifiers.WARN,
   parseModifier: defaultParseModifier
 };
 
@@ -183,7 +184,7 @@ function applyMods(config, bemName, modifiers) {
     toPass = modifiers.filter(isString);
   }
 
-  var extracted = toExtract.reduce(extractModifiers.bind(null, config), {});
+  var extracted = toExtract.reduce(extractModifiers(config), {});
 
   var parsed = Object.keys(extracted).map(function (mod) {
     return parseModifier(config, bemName, mod);
@@ -204,9 +205,7 @@ function applyMods(config, bemName, modifiers) {
 }
 
 function applyStyles(toJoin, styles, stylesPolicy) {
-  var fn = function fn(i) {
-    return i;
-  };
+  var fn = undefined;
 
   switch (stylesPolicy) {
     case StylesPolicy.IGNORE:
@@ -236,65 +235,70 @@ function applyStyles(toJoin, styles, stylesPolicy) {
         return acc;
       };
       break;
+
+    default:
+      throw new Error('StylePolicy: "' + stylesPolicy + '" has invalid value');
   }
 
   return toJoin.reduce(fn, []);
 }
 
-function extractModifiers(config, extracted, modifiers) {
-  if (Array.isArray(modifiers)) {
-    modifiers.forEach(function (m) {
-      return extracted[m] = null;
-    });
-    return extracted;
-  }
+function extractModifiers(config) {
+  return function (extracted, modifiers) {
 
-  if ((typeof modifiers === 'undefined' ? 'undefined' : _typeof(modifiers)) == 'object') {
-    var _ret = function () {
-      var sep = config.separators.keyValue;
-      var objecExtrac = function objecExtrac(key) {
+    if (Array.isArray(modifiers)) {
+      modifiers.forEach(function (m) {
+        return extracted[m] = null;
+      });
+      return extracted;
+    }
 
-        if (modifiers[key]) {
-          if (config.keyValue) {
-            var val = isBoolean(modifiers[key]) ? key : key + sep + modifiers[key];
-            extracted[val] = null;
-          } else {
-            extracted[key] = null;
+    if ((typeof modifiers === 'undefined' ? 'undefined' : _typeof(modifiers)) == 'object') {
+      var _ret = function () {
+        var sep = config.separators.keyValue;
+        var objecExtrac = function objecExtrac(key) {
+          if (modifiers[key]) {
+            if (config.keyValue) {
+              var val = isBoolean(modifiers[key]) ? key : key + sep + modifiers[key];
+              extracted[val] = null;
+            } else {
+              extracted[key] = null;
+            }
           }
-        }
-      };
+        };
 
-      Object.keys(modifiers).forEach(objecExtrac);
-      return {
-        v: extracted
-      };
-    }();
+        Object.keys(modifiers).forEach(objecExtrac);
+        return {
+          v: extracted
+        };
+      }();
 
-    if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-  }
+      if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+    }
 
-  if (!isString(modifiers)) {
-    throw new TypeError('Provided modifiers: "' + modifiers + '" is not supported');
-  }
+    if (!isString(modifiers)) {
+      throw new TypeError('Provided modifiers: "' + modifiers + '" is not supported');
+    }
 
-  switch (config.stringModifiers) {
-    case StringModifiers.ALLOW:
-      extracted[modifiers] = null;
-      break;
+    switch (config.stringModifiers) {
+      case StringModifiers.ALLOW:
+        extracted[modifiers] = null;
+        break;
 
-    case StringModifiers.THROW:
-      throw new TypeError('Provided modifier "' + modifiers + '" is now allowed!');
+      case StringModifiers.THROW:
+        throw new TypeError('Provided modifier "' + modifiers + '" is now allowed!');
 
-    case StringModifiers.WARN:
-      console.warn('Provided modifier "' + modifiers + '" is now allowed!');
-      break;
+      case StringModifiers.WARN:
+        console.warn('Provided modifier "' + modifiers + '" is now allowed!');
+        break;
 
-    case StringModifiers.PASS_THROUGH:
-      break;
-  }
+      case StringModifiers.PASS_THROUGH:
+        break;
+    }
 
-  return extracted;
-};
+    return extracted;
+  };
+}
 
 function isString(str) {
   return typeof str == 'string' || str instanceof String;
