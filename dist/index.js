@@ -158,11 +158,7 @@ function customBemNames(customConfig, block) {
 function customBemNamesInner(config, block) {
   var args = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
-  if (!config.bemLike) {
-    return applyMods(config, '', [block].concat(args));
-  }
-
-  if (isString(args[0])) {
+  if (config.bemLike && isString(args[0])) {
     var bemName = block + config.separators.element + args.shift();
     return applyMods(config, bemName, args);
   }
@@ -186,16 +182,15 @@ function applyMods(config, bemName, modifiers) {
 
   var extracted = toExtract.reduce(extractModifiers(config), {});
 
-  var parsed = Object.keys(extracted).map(function (mod) {
-    return parseModifier(config, bemName, mod);
-  });
+  var parsed = Object.keys(extracted);
 
-  var toJoin = [];
-  if (bemName === '') {
-    toJoin = toJoin.concat(parsed, toPass);
-  } else {
-    toJoin = [bemName].concat(parsed, toPass);
+  if (config.bemLike) {
+    parsed = parsed.map(function (mod) {
+      return parseModifier(config, bemName, mod);
+    });
   }
+
+  var toJoin = [bemName].concat(parsed, toPass);
 
   if (styles != undefined) {
     toJoin = applyStyles(toJoin, styles, stylesPolicy);

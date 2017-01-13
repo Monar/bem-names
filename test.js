@@ -355,13 +355,10 @@ describe('customBemNames', function() {
   it('should work with just a block and element', () => {
     const block = 'block';
     const element = 'element';
-    const bemNames = 'block__element';
-    const config = defaultConfig;
 
-    const expected = applyMods(config, bemNames, []);
-    const result = customBemNames(config, block, element);
+    const result = customBemNames(defaultConfig, block, element);
 
-    assert.equal(result, expected);
+    assert.equal(result, 'block__element');
   });
 
   it('should work with block', () => {
@@ -409,7 +406,6 @@ describe('customBemNames', function() {
     const element = 'element';
     const modifiers = [ ['super'], { ok: true, disabled: false }, 'string' ];
     const config = {
-      parseModifier: (c, n, m) => m,
       stringModifiers: StringModifiers.ALLOW,
       bemLike: false,
     };

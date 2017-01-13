@@ -57,11 +57,7 @@ export function customBemNames(customConfig, block, ...args) {
 
 
 export function customBemNamesInner(config, block, args=[]) {
-  if (!config.bemLike) {
-    return applyMods(config, '', [block].concat(args));
-  }
-
-  if (isString(args[0])) {
+  if (config.bemLike && isString(args[0])) {
     const bemName = block + config.separators.element + args.shift();
     return applyMods(config, bemName, args);
   }
@@ -86,16 +82,13 @@ export function applyMods(config, bemName, modifiers) {
 
   const extracted = toExtract.reduce(extractModifiers(config), {});
 
-  const parsed = Object.keys(extracted).map(
-    (mod) => parseModifier(config, bemName, mod)
-  );
+  let parsed = Object.keys(extracted);
 
-  let toJoin = [];
-  if (bemName === '') {
-    toJoin = toJoin.concat(parsed, toPass);
-  } else {
-    toJoin = [bemName].concat(parsed, toPass);
+  if (config.bemLike) {
+    parsed = parsed.map((mod) => parseModifier(config, bemName, mod));
   }
+
+  let toJoin = [bemName].concat(parsed, toPass);
 
   if (styles != undefined) {
     toJoin = applyStyles(toJoin, styles, stylesPolicy);
