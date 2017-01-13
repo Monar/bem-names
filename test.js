@@ -54,10 +54,22 @@ describe('extractModifier', function() {
     assert.deepEqual(result, {}, 'does not add string to result');
   });
 
-  it('should not add a string', () => {
+  it('should add a string', () => {
     const config = {
       ...defaultConfig,
       stringModifiers: StringModifiers.ALLOW,
+    };
+
+    const extract = extractModifiers(config);
+    const result =  extract({}, 'string');
+
+    assert.deepEqual(result, { string: null });
+  });
+
+  it('should add a string, !bemLike', () => {
+    const config = {
+      ...defaultConfig,
+      bemLike: false,
     };
 
     const extract = extractModifiers(config);
@@ -76,6 +88,19 @@ describe('extractModifier', function() {
     const result =  extract({}, 'string');
 
     assert.deepEqual(result, {});
+  });
+
+  it('should not omit a string if !bemLike', () => {
+    const config = {
+      ...defaultConfig,
+      stringModifiers: StringModifiers.PASS_THROUGH,
+      bemLike: false,
+    };
+
+    const extract = extractModifiers(config);
+    const result =  extract({}, 'string');
+
+    assert.deepEqual(result, { string: null });
   });
 
   it('should return same values', () => {
@@ -112,6 +137,18 @@ describe('extractModifier', function() {
     assert.deepEqual(result, { 'big-value': null });
   });
 
+  it('should ignore kevValue when !bemLike', () => {
+    const config = {
+      ...defaultConfig,
+      bemLike: false,
+      keyValue: true,
+    };
+    const extract = extractModifiers(config);
+    const sample = { big: 'value' };
+    const result = extract({}, sample);
+    assert.deepEqual(result, { big: null });
+  });
+
   it('should extract kevValue with custom separator', () => {
     const config = {
       ...defaultConfig,
@@ -129,6 +166,21 @@ describe('extractModifier', function() {
     const sample = { big: true };
     const result = extract({}, sample);
     assert.deepEqual(result, { big: null });
+  });
+
+  it('should accept numeric values', () => {
+    const config = {
+      ...defaultConfig,
+      keyValue: true,
+      stringModifiers: StringModifiers.ALLOW,
+    };
+    const extract = extractModifiers(config);
+    const sample = [321, [213], { 123: 123 }];
+    const result = sample.map((i) => extract({}, i));
+    assert.deepEqual(
+      result,
+      [{ 321: null }, { 213: null }, { '123-123': null }]
+    );
   });
 
 });
@@ -405,14 +457,30 @@ describe('customBemNames', function() {
     const block = 'block';
     const element = 'element';
     const modifiers = [ ['super'], { ok: true, disabled: false }, 'string' ];
-    const config = {
-      stringModifiers: StringModifiers.ALLOW,
-      bemLike: false,
-    };
+    const config = { bemLike: false };
 
     const result = customBemNames(config, block, element, ...modifiers);
 
     assert.equal(result, 'block element super ok string');
+  });
+
+  it('should work like classnames even with block other then string', () => {
+    const block = { block: 'should work' };
+    const element = ['element'];
+    const modifiers = [ ['super'], { ok: true, disabled: false }, 'string' ];
+    const config = { bemLike: false };
+
+    const result = customBemNames(config, block, element, ...modifiers);
+
+    assert.equal(result, 'block element super ok string');
+  });
+
+  it('should work like classnames', () => {
+    const config = { bemLike: false };
+
+    const result = customBemNames(config, { ok: 123, no: false }, 123, ['123']);
+
+    assert.equal(result, 'ok 123');
   });
 
 });
@@ -526,6 +594,16 @@ describe('bemNamesFactory', function() {
     assert.equal(
       factory(['www', 'ok'], 'test', { wee: true }, 'final'),
       'block www ok test wee final');
+  });
+
+  it('should run like classnames', () => {
+    const config = { bemLike: false };
+
+    const factory = bemNamesFactory({ block: 123 }, config);
+
+    assert.equal(
+      factory(['www'], 13, { wee: true }, 'final'),
+      'block www 13 wee final');
   });
 
   it('should allow basic keyValue modifiers', () => {

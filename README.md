@@ -142,14 +142,27 @@ bem('element', ['mod1']); // 'block-element is-mod1'
 
 ```js
 const defaultConfig = {
-  bemLike: true, // treat first string as block and a second one as modifier.
+
+  /**
+  * Treat first string as block and a second one as modifier.
+  * eg. cbn({ bemLike: false}, block, element, ['mod']) // funny and makes no sense
+  */
+  bemLike: true,
+
   separators: { element: '__', modifier: '--', keyValue: '-' },
+
   states: {},
+
   joinWith: ' ',
+
   keyValue: false,
+
   stringModifiers: StringModifiers.WARN,
+
   parseModifier: defaultParseModifier, // (config:object, bemName:str, modifier:str) => string
+
   styles: undefined,
+
   stylesPolicy: StylesPolicy.WARN,
 };
 ```

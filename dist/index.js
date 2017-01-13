@@ -126,13 +126,13 @@ function bemNames() {
 function bemNamesFactory(block) {
   var customConfig = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-  if (!isString(block)) {
-    throw TypeError('block name: "' + block + '" is not a string');
-  }
-
   var config = _extends({}, defaultConfig, customConfig, {
     separators: _extends({}, defaultConfig.separators, customConfig.separators)
   });
+
+  if (config.bemLike && !isString(block)) {
+    throw TypeError('block name: "' + block + '" is not a string');
+  }
 
   return function () {
     for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
@@ -161,13 +161,16 @@ function customBemNamesInner(config, block) {
   if (config.bemLike && isString(args[0])) {
     var bemName = block + config.separators.element + args.shift();
     return applyMods(config, bemName, args);
+  } else if (!config.bemLike) {
+    return applyMods(config, undefined, [block].concat(args));
   }
 
   return applyMods(config, block, args);
 }
 
 function applyMods(config, bemName, modifiers) {
-  var parseModifier = config.parseModifier,
+  var bemLike = config.bemLike,
+      parseModifier = config.parseModifier,
       joinWith = config.joinWith,
       stringModifiers = config.stringModifiers,
       styles = config.styles,
@@ -176,21 +179,21 @@ function applyMods(config, bemName, modifiers) {
   var toExtract = modifiers;
   var toPass = [];
 
-  if (stringModifiers === StringModifiers.PASS_THROUGH) {
+  if (bemLike && stringModifiers === StringModifiers.PASS_THROUGH) {
     toPass = modifiers.filter(isString);
   }
 
   var extracted = toExtract.reduce(extractModifiers(config), {});
 
   var parsed = Object.keys(extracted);
+  var toJoin = parsed;
 
-  if (config.bemLike) {
+  if (bemLike) {
     parsed = parsed.map(function (mod) {
       return parseModifier(config, bemName, mod);
     });
+    toJoin = [bemName].concat(parsed, toPass);
   }
-
-  var toJoin = [bemName].concat(parsed, toPass);
 
   if (styles != undefined) {
     toJoin = applyStyles(toJoin, styles, stylesPolicy);
@@ -249,45 +252,38 @@ function extractModifiers(config) {
     }
 
     if ((typeof modifiers === 'undefined' ? 'undefined' : _typeof(modifiers)) == 'object') {
-      var _ret = function () {
-        var sep = config.separators.keyValue;
-        var objecExtrac = function objecExtrac(key) {
-          if (modifiers[key]) {
-            if (config.keyValue) {
-              var val = isBoolean(modifiers[key]) ? key : key + sep + modifiers[key];
-              extracted[val] = null;
-            } else {
+      var objecExtrac = function objecExtrac(key) {
+        modifiers[key] && (extracted[key] = null);
+      };
+
+      if (config.bemLike && config.keyValue) {
+        (function () {
+          var sep = config.separators.keyValue;
+          objecExtrac = function objecExtrac(key) {
+            if (modifiers[key] && isBoolean(modifiers[key])) {
               extracted[key] = null;
+            } else if (modifiers[key]) {
+              extracted[key + sep + modifiers[key]] = null;
             }
-          }
-        };
+          };
+        })();
+      }
 
-        Object.keys(modifiers).forEach(objecExtrac);
-        return {
-          v: extracted
-        };
-      }();
-
-      if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+      Object.keys(modifiers).forEach(objecExtrac);
+      return extracted;
     }
 
-    if (!isString(modifiers)) {
-      throw new TypeError('Provided modifiers: "' + modifiers + '" is not supported');
+    if (!config.bemLike || config.stringModifiers == StringModifiers.ALLOW) {
+      extracted[modifiers] = null;
+      return extracted;
     }
 
     switch (config.stringModifiers) {
-      case StringModifiers.ALLOW:
-        extracted[modifiers] = null;
-        break;
-
       case StringModifiers.THROW:
         throw new TypeError('Provided modifier "' + modifiers + '" is now allowed!');
 
       case StringModifiers.WARN:
         console.warn('Provided modifier "' + modifiers + '" is now allowed!');
-        break;
-
-      case StringModifiers.PASS_THROUGH:
         break;
     }
 

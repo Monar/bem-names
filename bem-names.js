@@ -31,15 +31,15 @@ export function bemNames(...args) {
 
 
 export function bemNamesFactory(block, customConfig={}){
-  if (!isString(block)) {
-    throw TypeError(`block name: "${block}" is not a string`);
-  }
-
   const config = {
     ...defaultConfig,
     ...customConfig,
     separators: { ...defaultConfig.separators, ...customConfig.separators },
   };
+
+  if (config.bemLike && !isString(block)) {
+    throw TypeError(`block name: "${block}" is not a string`);
+  }
 
   return (...args) => customBemNamesInner(config, block, args);
 }
@@ -60,6 +60,8 @@ export function customBemNamesInner(config, block, args=[]) {
   if (config.bemLike && isString(args[0])) {
     const bemName = block + config.separators.element + args.shift();
     return applyMods(config, bemName, args);
+  } else if (!config.bemLike) {
+    return applyMods(config, undefined, [block].concat(args));
   }
 
   return applyMods(config, block, args);
@@ -67,6 +69,7 @@ export function customBemNamesInner(config, block, args=[]) {
 
 export function applyMods(config, bemName, modifiers) {
   const {
+    bemLike,
     parseModifier,
     joinWith,
     stringModifiers,
@@ -76,19 +79,19 @@ export function applyMods(config, bemName, modifiers) {
   let toExtract = modifiers;
   let toPass = [];
 
-  if (stringModifiers === StringModifiers.PASS_THROUGH) {
+  if (bemLike && stringModifiers === StringModifiers.PASS_THROUGH) {
     toPass = modifiers.filter(isString);
   }
 
   const extracted = toExtract.reduce(extractModifiers(config), {});
 
   let parsed = Object.keys(extracted);
+  let toJoin = parsed;
 
-  if (config.bemLike) {
+  if (bemLike) {
     parsed = parsed.map((mod) => parseModifier(config, bemName, mod));
+    toJoin = [bemName].concat(parsed, toPass);
   }
-
-  let toJoin = [bemName].concat(parsed, toPass);
 
   if (styles != undefined) {
     toJoin = applyStyles(toJoin, styles, stylesPolicy);
@@ -145,42 +148,34 @@ export function extractModifiers(config) {
     }
 
     if (typeof modifiers == 'object') {
-      const sep = config.separators.keyValue;
-      const objecExtrac = (key) => {
-        if (modifiers[key]) {
-          if (config.keyValue) {
-            const val =
-              isBoolean(modifiers[key]) ? key : key + sep + modifiers[key];
-            extracted[val] = null;
-          } else {
+      let objecExtrac = (key) => { modifiers[key] && (extracted[key] = null); };
+
+      if (config.bemLike && config.keyValue) {
+        const sep = config.separators.keyValue;
+        objecExtrac = (key) => {
+          if (modifiers[key] && isBoolean(modifiers[key])) {
             extracted[key] = null;
+          } else if (modifiers[key]) {
+            extracted[key + sep + modifiers[key]] = null;
           }
-        }
-      };
+        };
+      }
 
       Object.keys(modifiers).forEach(objecExtrac);
       return extracted;
     }
 
-    if (!isString(modifiers)) {
-      throw new TypeError(
-        `Provided modifiers: "${modifiers}" is not supported`
-      );
+    if (!config.bemLike || config.stringModifiers == StringModifiers.ALLOW) {
+      extracted[modifiers] = null;
+      return extracted;
     }
 
     switch(config.stringModifiers) {
-      case StringModifiers.ALLOW:
-        extracted[modifiers] = null;
-        break;
-
       case StringModifiers.THROW:
         throw new TypeError(`Provided modifier "${modifiers}" is now allowed!`);
 
       case StringModifiers.WARN:
         console.warn(`Provided modifier "${modifiers}" is now allowed!`);
-        break;
-
-      case StringModifiers.PASS_THROUGH:
         break;
     }
 

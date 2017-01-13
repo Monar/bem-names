@@ -14,36 +14,52 @@ function testRunner(times, name, fn) {
     fn();
   }
   const totalTime = Date.now() - time;
-  console.warn(`${totalTime}ms\t${name}`);
+  return `${totalTime}ms\t${name}`;
 }
+
+const results = [];
 
 const fn1 = () => bemClassname('block', 'elem', { mod1: true, mod2: false, mod3: 'mod3' });
 const fn2 = () => dist.bemNames('block', 'elem', { mod1: true, mod2: false, mod3: 'mod3' });
 
-testRunner(runCount, 'bem-classname', fn1);
-testRunner(runCount, 'bemNames', fn2);
-console.warn('-------------------------');
+results.push(testRunner(runCount, 'bem-classname', fn1));
+results.push(testRunner(runCount, 'bem-classname', fn1));
+results.push(testRunner(runCount, 'bem-classname', fn1));
+results.push(testRunner(runCount, 'bemNames', fn2));
+results.push(testRunner(runCount, 'bemNames', fn2));
+results.push(testRunner(runCount, 'bemNames', fn2));
+results.push('-------------------------');
 
 
-const config4 = { keyValue: true, separators: { modifier: '_', keyValue: '_' } };
+const config4 = { keyValue: true, stringModifiers: 'allow', separators: { modifier: '_', keyValue: '_' } };
 const bem4 = dist.bemNamesFactory('block', config4);
+
 const fn3 = () => b('block', 'elem', { mod1: true, mod2: false, mod3: 'mod3' });
 const fn4 = () => bem4('elem', { mod1: true, mod2: false, mod3: 'mod3' });
 
-testRunner(runCount, 'b_', fn3);
-testRunner(runCount, 'bemNames', fn4);
-console.warn('-------------------------');
+results.push(testRunner(runCount, 'b_', fn3));
+results.push(testRunner(runCount, 'b_', fn3));
+results.push(testRunner(runCount, 'b_', fn3));
+results.push(testRunner(runCount, 'bemNames', fn4));
+results.push(testRunner(runCount, 'bemNames', fn4));
+results.push(testRunner(runCount, 'bemNames', fn4));
+results.push('-------------------------');
 
 const config6 = { keyValue: true, separators: { modifier: '_', keyValue: '_' } };
 const bem6 = dist.bemNamesFactory('block', config6);
+
 const block = bemCN('block');
 
 const fn5 = () => block('elem', { mod1: true, mod2: false, mod3: 'mod3' }).toString();
 const fn6 = () => bem6('elem', { mod1: true, mod2: false, mod3: 'mod3' });
 
-testRunner(runCount, 'bem-cn', fn5);
-testRunner(runCount, 'bemNames', fn6);
-console.warn('-------------------------');
+results.push(testRunner(runCount, 'bem-cn', fn5));
+results.push(testRunner(runCount, 'bem-cn', fn5));
+results.push(testRunner(runCount, 'bem-cn', fn5));
+results.push(testRunner(runCount, 'bemNames', fn6));
+results.push(testRunner(runCount, 'bemNames', fn6));
+results.push(testRunner(runCount, 'bemNames', fn6));
+results.push('-------------------------');
 
 const classes = {
   name: 'block',
@@ -61,9 +77,13 @@ const bem8 = dist.bemNamesFactory('block', config8);
 const fn7 = () => bemClassnames( classes, { mod1: true, mod2: false, mod3: 'mod3' });
 const fn8 = () => bem8({ mod1: true, mod2: false, mod3: 'mod3' });
 
-testRunner(runCount, 'bem-classnames', fn7);
-testRunner(runCount, 'bemNames', fn8);
-console.warn('-------------------------');
+results.push(testRunner(runCount, 'bem-classnames', fn7));
+results.push(testRunner(runCount, 'bem-classnames', fn7));
+results.push(testRunner(runCount, 'bem-classnames', fn7));
+results.push(testRunner(runCount, 'bemNames', fn8));
+results.push(testRunner(runCount, 'bemNames', fn8));
+results.push(testRunner(runCount, 'bemNames', fn8));
+results.push('-------------------------');
 
 const config10 = {
   bemLike: false,
@@ -76,6 +96,12 @@ const bem10 = dist.bemNamesFactory('block', config10);
 const fn9 = () => classNames('block', 'elem', { mod1: true, mod2: false, mod3: 'mod3' });
 const fn10 = () => bem10('elem', { mod1: true, mod2: false, mod3: 'mod3' });
 
-testRunner(runCount, 'classnames', fn9);
-testRunner(runCount, 'bemNames', fn10);
-console.warn('-------------------------');
+results.push(testRunner(runCount, 'classnames', fn9));
+results.push(testRunner(runCount, 'classnames', fn9));
+results.push(testRunner(runCount, 'classnames', fn9));
+results.push(testRunner(runCount, 'bemNames', fn10));
+results.push(testRunner(runCount, 'bemNames', fn10));
+results.push(testRunner(runCount, 'bemNames', fn10));
+results.push('-------------------------');
+
+results.forEach((i) => console.warn(i));
