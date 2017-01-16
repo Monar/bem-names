@@ -85,7 +85,12 @@ export function applyMods(config, bemName, modifiers) {
 
   const extracted = toExtract.reduce(extractModifiers(config), {});
 
-  let parsed = Object.keys(extracted);
+  let extractedKeys = Object.keys(extracted);
+  let parsed = new Array(extractedKeys.length);
+  parsed = extractedKeys.reduce(
+    (acc, k) => { acc[extracted[k]] = k; return acc; },
+    parsed
+  );
   let toJoin = parsed;
 
   if (bemLike) {
@@ -140,23 +145,30 @@ export function applyStyles(toJoin, styles, stylesPolicy) {
 
 
 export function extractModifiers(config) {
+  let count = -1;
   return (extracted, modifiers) => {
 
     if (Array.isArray(modifiers)) {
-      modifiers.forEach((m) => extracted[m] = null);
+      modifiers.forEach(
+        (m) => (m in extracted) || (extracted[m] = ++count)
+      );
       return extracted;
     }
 
     if (typeof modifiers == 'object') {
-      let objecExtrac = (key) => { modifiers[key] && (extracted[key] = null); };
+      let objecExtrac = (k) => {
+        k in extracted || (modifiers[k] && (extracted[k] = ++count));
+      };
 
       if (config.bemLike && config.keyValue) {
         const sep = config.separators.keyValue;
         objecExtrac = (key) => {
-          if (modifiers[key] && isBoolean(modifiers[key])) {
-            extracted[key] = null;
+          if (key in extracted) {
+            return;
+          } else if (modifiers[key] && isBoolean(modifiers[key])) {
+            extracted[key] = ++count;
           } else if (modifiers[key]) {
-            extracted[key + sep + modifiers[key]] = null;
+            extracted[key + sep + modifiers[key]] = ++count;
           }
         };
       }
@@ -165,18 +177,21 @@ export function extractModifiers(config) {
       return extracted;
     }
 
-    if (!config.bemLike || config.stringModifiers == StringModifiers.ALLOW) {
-      extracted[modifiers] = null;
+    if (config.bemLike && config.stringModifiers == StringModifiers.WARN) {
+      console.warn(`Provided modifier "${modifiers}" is now allowed!`);
       return extracted;
     }
 
-    switch(config.stringModifiers) {
-      case StringModifiers.THROW:
-        throw new TypeError(`Provided modifier "${modifiers}" is now allowed!`);
+    if (config.bemLike &&config.stringModifiers == StringModifiers.THROW) {
+      throw new TypeError(`Provided modifier "${modifiers}" is now allowed!`);
+    }
 
-      case StringModifiers.WARN:
-        console.warn(`Provided modifier "${modifiers}" is now allowed!`);
-        break;
+    if (modifiers in extracted) {
+      return extracted;
+    }
+
+    if (!config.bemLike || config.stringModifiers == StringModifiers.ALLOW) {
+      extracted[modifiers] = ++count;
     }
 
     return extracted;

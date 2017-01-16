@@ -185,7 +185,11 @@ function applyMods(config, bemName, modifiers) {
 
   var extracted = toExtract.reduce(extractModifiers(config), {});
 
-  var parsed = Object.keys(extracted);
+  var extractedKeys = Object.keys(extracted);
+  var parsed = new Array(extractedKeys.length);
+  parsed = extractedKeys.reduce(function (acc, k) {
+    acc[extracted[k]] = k;return acc;
+  }, parsed);
   var toJoin = parsed;
 
   if (bemLike) {
@@ -242,28 +246,31 @@ function applyStyles(toJoin, styles, stylesPolicy) {
 }
 
 function extractModifiers(config) {
+  var count = -1;
   return function (extracted, modifiers) {
 
     if (Array.isArray(modifiers)) {
       modifiers.forEach(function (m) {
-        return extracted[m] = null;
+        return m in extracted || (extracted[m] = ++count);
       });
       return extracted;
     }
 
     if ((typeof modifiers === 'undefined' ? 'undefined' : _typeof(modifiers)) == 'object') {
-      var objecExtrac = function objecExtrac(key) {
-        modifiers[key] && (extracted[key] = null);
+      var objecExtrac = function objecExtrac(k) {
+        k in extracted || modifiers[k] && (extracted[k] = ++count);
       };
 
       if (config.bemLike && config.keyValue) {
         (function () {
           var sep = config.separators.keyValue;
           objecExtrac = function objecExtrac(key) {
-            if (modifiers[key] && isBoolean(modifiers[key])) {
-              extracted[key] = null;
+            if (key in extracted) {
+              return;
+            } else if (modifiers[key] && isBoolean(modifiers[key])) {
+              extracted[key] = ++count;
             } else if (modifiers[key]) {
-              extracted[key + sep + modifiers[key]] = null;
+              extracted[key + sep + modifiers[key]] = ++count;
             }
           };
         })();
@@ -273,18 +280,21 @@ function extractModifiers(config) {
       return extracted;
     }
 
-    if (!config.bemLike || config.stringModifiers == StringModifiers.ALLOW) {
-      extracted[modifiers] = null;
+    if (config.bemLike && config.stringModifiers == StringModifiers.WARN) {
+      console.warn('Provided modifier "' + modifiers + '" is now allowed!');
       return extracted;
     }
 
-    switch (config.stringModifiers) {
-      case StringModifiers.THROW:
-        throw new TypeError('Provided modifier "' + modifiers + '" is now allowed!');
+    if (config.bemLike && config.stringModifiers == StringModifiers.THROW) {
+      throw new TypeError('Provided modifier "' + modifiers + '" is now allowed!');
+    }
 
-      case StringModifiers.WARN:
-        console.warn('Provided modifier "' + modifiers + '" is now allowed!');
-        break;
+    if (modifiers in extracted) {
+      return extracted;
+    }
+
+    if (!config.bemLike || config.stringModifiers == StringModifiers.ALLOW) {
+      extracted[modifiers] = ++count;
     }
 
     return extracted;
