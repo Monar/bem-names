@@ -20,7 +20,7 @@ npm install bem-names --save
 
 The `bemNames` function takes any number of arguments which can be a string,
 array or object. First two strings are threted respectivly as block and element
-names. All returned modifiers are unique (no duplicates).
+names.
 
 ```js
 import bemNames from 'bem-names';
@@ -30,7 +30,6 @@ bemNames('block', ['mod']); // block block--mod
 bemNames('block', 'element', ['mod']); // block__element block__element--mod
 bemNames('block', 'element', { mod2: true, mod3: false }); // 'block__element block__element--mod2'
 bemNames('block', 'element', ['mod3'], { mod3: false }); // 'block__element block__element--mod3'
-bemNames('block', ['mod3'], { mod3: true }); // 'block block--mod3'
 ```
 
 With factory:
@@ -45,7 +44,6 @@ bem(['mod']); // block block--mod
 bem('element', ['mod']); // block__element block__element--mod
 bem('element', { mod2: true, mod3: false }); // 'block__element block__element--mod2'
 bem('element', ['mod3'], { mod3: false }); // 'block__element block__element--mod3'
-bem(['mod3'], { mod3: true }); // 'block block--mod3'
 ```
 
 Check [advance usage](#advance-usage)
@@ -96,14 +94,16 @@ generator but with no support for BEM. :]
 I've performed some performance tests. Each packaged received same parameters,
 and bemNames was configured to match output for each of the packages.
 
+*Implementation with De-duplication is 18% slower.*
+
 
 | |10K | bemNames |
 |:-:|--:|:-:|
-|b_              | 2ms   | 18ms |
-|bem-classname   | 18ms  | 17ms  |
-|bem-classanmes  | 72ms  | 14ms  |
-|bem-cn          | 23ms  | 17ms  |
-|classnames      | 4ms   | 17ms  |
+|b_              | 2ms   | 12ms |
+|bem-classname   | 13ms  | 11ms  |
+|bem-classanmes  | 72ms  | 11ms  |
+|bem-cn          | 23ms  | 12ms  |
+|classnames      | 3ms   | 7ms  |
 
 
 ## Advance usage

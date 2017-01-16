@@ -24,7 +24,7 @@ describe('extractModifier', function() {
 
   it('should throw for incorrect type', () => {
     const extract = extractModifiers(defaultConfig);
-    const fn = () => extract({}, null);
+    const fn = () => extract([], null);
     assert.throws(fn, TypeError);
   });
 
@@ -36,7 +36,7 @@ describe('extractModifier', function() {
 
     const extract = extractModifiers(config);
 
-    const fn = () => extract({}, 'string');
+    const fn = () => extract([], 'string');
     assert.throws(fn, TypeError);
   });
 
@@ -49,9 +49,9 @@ describe('extractModifier', function() {
     const extract = extractModifiers(config);
 
     let result = false;
-    const fn = () => { result = extract({}, 'string'); };
+    const fn = () => { result = extract([], 'string'); };
     assert.doesNotThrow(fn, TypeError, 'don\'t throw');
-    assert.deepEqual(result, {}, 'does not add string to result');
+    assert.deepEqual(result, [], 'does not add string to result');
   });
 
   it('should add a string', () => {
@@ -61,9 +61,9 @@ describe('extractModifier', function() {
     };
 
     const extract = extractModifiers(config);
-    const result =  extract({}, 'string');
+    const result =  extract([], 'string');
 
-    assert.deepEqual(result, { string: null });
+    assert.deepEqual(result, ['string']);
   });
 
   it('should add a string, !bemLike', () => {
@@ -73,9 +73,9 @@ describe('extractModifier', function() {
     };
 
     const extract = extractModifiers(config);
-    const result =  extract({}, 'string');
+    const result =  extract([], 'string');
 
-    assert.deepEqual(result, { string: null });
+    assert.deepEqual(result, ['string']);
   });
 
   it('should omit a string', () => {
@@ -85,9 +85,9 @@ describe('extractModifier', function() {
     };
 
     const extract = extractModifiers(config);
-    const result =  extract({}, 'string');
+    const result =  extract([], 'string');
 
-    assert.deepEqual(result, {});
+    assert.deepEqual(result, []);
   });
 
   it('should not omit a string if !bemLike', () => {
@@ -98,32 +98,24 @@ describe('extractModifier', function() {
     };
 
     const extract = extractModifiers(config);
-    const result =  extract({}, 'string');
+    const result =  extract([], 'string');
 
-    assert.deepEqual(result, { string: null });
+    assert.deepEqual(result, ['string']);
   });
 
   it('should return same values', () => {
     const extract = extractModifiers(defaultConfig);
     const sample = ['blue', 'big'];
 
-    const result = extract({}, sample);
-    assert.deepEqual(result, { blue: null, big: null });
+    const result = extract([], sample);
+    assert.deepEqual(result, ['blue', 'big']);
   });
 
   it('should return set of elements with positive value', () => {
     const extract = extractModifiers(defaultConfig);
     const sample = { blue: false, big: 'that should be true' };
-    const result = extract({}, sample);
-    assert.deepEqual(result, { big: null });
-  });
-
-  it('should return set without duplicates', () => {
-    const extract = extractModifiers(defaultConfig);
-    const init = { big: null };
-    const sample = { big: true };
-    const result = extract(init, sample);
-    assert.deepEqual(result, init);
+    const result = extract([], sample);
+    assert.deepEqual(result, ['big']);
   });
 
   it('should extract kevValue strings', () => {
@@ -133,8 +125,8 @@ describe('extractModifier', function() {
     };
     const extract = extractModifiers(config);
     const sample = { big: 'value' };
-    const result = extract({}, sample);
-    assert.deepEqual(result, { 'big-value': null });
+    const result = extract([], sample);
+    assert.deepEqual(result, ['big-value']);
   });
 
   it('should ignore kevValue when !bemLike', () => {
@@ -145,8 +137,8 @@ describe('extractModifier', function() {
     };
     const extract = extractModifiers(config);
     const sample = { big: 'value' };
-    const result = extract({}, sample);
-    assert.deepEqual(result, { big: null });
+    const result = extract([], sample);
+    assert.deepEqual(result, ['big']);
   });
 
   it('should extract kevValue with custom separator', () => {
@@ -157,15 +149,15 @@ describe('extractModifier', function() {
     };
     const extract = extractModifiers(config);
     const sample = { big: 'value' };
-    const result = extract({}, sample);
-    assert.deepEqual(result, { 'big@value': null });
+    const result = extract([], sample);
+    assert.deepEqual(result, ['big@value']);
   });
 
   it('should extract kevValue with just key, when value is boolean', () => {
     const extract = extractModifiers(defaultConfig);
     const sample = { big: true };
-    const result = extract({}, sample);
-    assert.deepEqual(result, { big: null });
+    const result = extract([], sample);
+    assert.deepEqual(result, ['big']);
   });
 
   it('should accept numeric values', () => {
@@ -176,11 +168,8 @@ describe('extractModifier', function() {
     };
     const extract = extractModifiers(config);
     const sample = [321, [213], { 123: 123 }];
-    const result = sample.map((i) => extract({}, i));
-    assert.deepEqual(
-      result,
-      [{ 321: null }, { 213: null }, { '123-123': null }]
-    );
+    const result = sample.map((i) => extract([], i));
+    assert.deepEqual(result, [[321], [213], ['123-123']]);
   });
 
 });
@@ -478,9 +467,9 @@ describe('customBemNames', function() {
   it('should work like classnames', () => {
     const config = { bemLike: false };
 
-    const result = customBemNames(config, { ok: 123, no: false }, 123, ['123']);
+    const result = customBemNames(config, { ok: 123, no: false }, 123, ['3']);
 
-    assert.equal(result, 'ok 123');
+    assert.equal(result, 'ok 123 3');
   });
 
 });
@@ -509,16 +498,6 @@ describe('bemNames', function() {
       result,
       'block__element block__element--ok block__element--go'
     );
-  });
-
-  it('should return only unique modifiers', () => {
-    const result = bemNames(
-      'block',
-      ['ok'],
-      { ok: true, no: false }
-    );
-
-    assert.equal( result, 'block block--ok');
   });
 
 });

@@ -183,13 +183,9 @@ function applyMods(config, bemName, modifiers) {
     toPass = modifiers.filter(isString);
   }
 
-  var extracted = toExtract.reduce(extractModifiers(config), {});
+  var extracted = toExtract.reduce(extractModifiers(config), []);
 
-  var extractedKeys = Object.keys(extracted);
-  var parsed = new Array(extractedKeys.length);
-  parsed = extractedKeys.reduce(function (acc, k) {
-    acc[extracted[k]] = k;return acc;
-  }, parsed);
+  var parsed = extracted;
   var toJoin = parsed;
 
   if (bemLike) {
@@ -246,34 +242,26 @@ function applyStyles(toJoin, styles, stylesPolicy) {
 }
 
 function extractModifiers(config) {
-  var count = -1;
+  var keyValueSep = config.separators.keyValue;
   return function (extracted, modifiers) {
-
     if (Array.isArray(modifiers)) {
-      modifiers.forEach(function (m) {
-        return m in extracted || (extracted[m] = ++count);
-      });
-      return extracted;
+      return extracted.concat(modifiers);
     }
 
     if ((typeof modifiers === 'undefined' ? 'undefined' : _typeof(modifiers)) == 'object') {
       var objecExtrac = function objecExtrac(k) {
-        k in extracted || modifiers[k] && (extracted[k] = ++count);
+        return !!modifiers[k] && extracted.push(k);
       };
 
       if (config.bemLike && config.keyValue) {
-        (function () {
-          var sep = config.separators.keyValue;
-          objecExtrac = function objecExtrac(key) {
-            if (key in extracted) {
-              return;
-            } else if (modifiers[key] && isBoolean(modifiers[key])) {
-              extracted[key] = ++count;
-            } else if (modifiers[key]) {
-              extracted[key + sep + modifiers[key]] = ++count;
-            }
-          };
-        })();
+        objecExtrac = function objecExtrac(key) {
+          var value = modifiers[key];
+          if (value === true) {
+            extracted.push(key);
+          } else if (!!value) {
+            extracted.push(key + keyValueSep + value);
+          }
+        };
       }
 
       Object.keys(modifiers).forEach(objecExtrac);
@@ -289,12 +277,8 @@ function extractModifiers(config) {
       throw new TypeError('Provided modifier "' + modifiers + '" is now allowed!');
     }
 
-    if (modifiers in extracted) {
-      return extracted;
-    }
-
     if (!config.bemLike || config.stringModifiers == StringModifiers.ALLOW) {
-      extracted[modifiers] = ++count;
+      extracted.push(modifiers);
     }
 
     return extracted;
@@ -303,10 +287,6 @@ function extractModifiers(config) {
 
 function isString(str) {
   return typeof str == 'string' || str instanceof String;
-}
-
-function isBoolean(val) {
-  return typeof val == 'boolean' || val instanceof Boolean;
 }
 
 function defaultParseModifier(config, bemName, modifier) {
