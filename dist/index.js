@@ -91,14 +91,12 @@ exports.applyStyles = applyStyles;
 exports.extractModifiers = extractModifiers;
 exports.defaultParseModifier = defaultParseModifier;
 var StringModifiers = exports.StringModifiers = {
-  THROW: 'throw',
   WARN: 'warn',
   ALLOW: 'allow',
   PASS_THROUGH: 'passThrough'
 };
 
 var StylesPolicy = exports.StylesPolicy = {
-  THROW: 'throw',
   WARN: 'warn',
   IGNORE: 'ignore'
 };
@@ -223,17 +221,6 @@ function applyStyles(toJoin, styles, stylesPolicy) {
       };
       break;
 
-    case StylesPolicy.THROW:
-      fn = function fn(acc, key) {
-        if (key in styles) {
-          acc.push(styles[key]);
-        } else {
-          throw new Error('Key ' + key + ' is missing in styles');
-        }
-        return acc;
-      };
-      break;
-
     default:
       throw new Error('StylePolicy: "' + stylesPolicy + '" has invalid value');
   }
@@ -258,7 +245,7 @@ function extractModifiers(config) {
           var value = modifiers[key];
           if (value === true) {
             extracted.push(key);
-          } else if (!!value) {
+          } else if (value) {
             extracted.push(key + keyValueSep + value);
           }
         };
@@ -271,10 +258,6 @@ function extractModifiers(config) {
     if (config.bemLike && config.stringModifiers == StringModifiers.WARN) {
       console.warn('Provided modifier "' + modifiers + '" is now allowed!');
       return extracted;
-    }
-
-    if (config.bemLike && config.stringModifiers == StringModifiers.THROW) {
-      throw new TypeError('Provided modifier "' + modifiers + '" is now allowed!');
     }
 
     if (!config.bemLike || config.stringModifiers == StringModifiers.ALLOW) {

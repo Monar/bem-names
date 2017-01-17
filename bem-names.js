@@ -1,5 +1,4 @@
 export const StringModifiers = {
-  THROW: 'throw',
   WARN: 'warn',
   ALLOW: 'allow',
   PASS_THROUGH: 'passThrough',
@@ -7,7 +6,6 @@ export const StringModifiers = {
 
 
 export const StylesPolicy = {
-  THROW: 'throw',
   WARN: 'warn',
   IGNORE: 'ignore',
 };
@@ -121,17 +119,6 @@ export function applyStyles(toJoin, styles, stylesPolicy) {
       };
       break;
 
-    case StylesPolicy.THROW:
-      fn = (acc, key) => {
-        if(key in styles) {
-          acc.push(styles[key]);
-        } else {
-          throw new Error(`Key ${key} is missing in styles`);
-        }
-        return acc;
-      };
-      break;
-
     default:
       throw new Error(`StylePolicy: "${stylesPolicy}" has invalid value`);
   }
@@ -168,10 +155,6 @@ export function extractModifiers(config) {
     if (config.bemLike && config.stringModifiers == StringModifiers.WARN) {
       console.warn(`Provided modifier "${modifiers}" is now allowed!`);
       return extracted;
-    }
-
-    if (config.bemLike && config.stringModifiers == StringModifiers.THROW) {
-      throw new TypeError(`Provided modifier "${modifiers}" is now allowed!`);
     }
 
     if (!config.bemLike || config.stringModifiers == StringModifiers.ALLOW) {

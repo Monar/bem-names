@@ -19,8 +19,11 @@ npm install bem-names --save
 ## Basic usage
 
 The `bemNames` function takes any number of arguments which can be a string,
-array or object. First two strings are threted respectivly as block and element
-names.
+array or object. First two arguments must be strings and they are threated as
+block and element names. Default configuration blocks usage of modifiers not
+wrapped with `[]` or `{}` to maintain clarity of what is a block or an element
+and what is a modifier. This and many other behaviours can be changed, check
+[advance usage](#advance-usage).
 
 ```js
 import bemNames from 'bem-names';
@@ -29,7 +32,6 @@ bemNames('block'); // block
 bemNames('block', ['mod']); // block block--mod
 bemNames('block', 'element', ['mod']); // block__element block__element--mod
 bemNames('block', 'element', { mod2: true, mod3: false }); // 'block__element block__element--mod2'
-bemNames('block', 'element', ['mod3'], { mod3: false }); // 'block__element block__element--mod3'
 ```
 
 With factory:
@@ -43,7 +45,6 @@ bem(); // block
 bem(['mod']); // block block--mod
 bem('element', ['mod']); // block__element block__element--mod
 bem('element', { mod2: true, mod3: false }); // 'block__element block__element--mod2'
-bem('element', ['mod3'], { mod3: false }); // 'block__element block__element--mod3'
 ```
 
 Check [advance usage](#advance-usage)
@@ -94,7 +95,7 @@ generator but with no support for BEM. :]
 I've performed some performance tests. Each packaged received same parameters,
 and bemNames was configured to match output for each of the packages.
 
-*Implementation with De-duplication is 18% slower.*
+*Implementation with De-duplication was about 18% slower.*
 
 
 | |10K | bemNames |
