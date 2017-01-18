@@ -28,18 +28,6 @@ describe('extractModifier', function() {
     assert.throws(fn, TypeError);
   });
 
-  it('should throw for string', () => {
-    const config = {
-      ...defaultConfig,
-      stringModifiers: StringModifiers.THROW,
-    };
-
-    const extract = extractModifiers(config);
-
-    const fn = () => extract([], 'string');
-    assert.throws(fn, TypeError);
-  });
-
   it('should not throw for string, but print to console', () => {
     const config = {
       ...defaultConfig,
@@ -500,6 +488,21 @@ describe('bemNames', function() {
     );
   });
 
+  it('should preserve order', () => {
+    const result = bemNames(
+      'block',
+      ['ale'],
+      [777, 22],
+      { 123: true },
+      ['ola']
+    );
+
+    assert.equal(
+      result,
+      'block block--ale block--777 block--22 block--123 block--ola'
+    );
+  });
+
 });
 
 describe('bemNamesFactory', function() {
@@ -597,7 +600,7 @@ describe('bemNamesFactory', function() {
 
   it('should apply styles', () => {
     const styles = { 'block--www': '123', block: '321' };
-    const config = { styles, stylesPolicy: StylesPolicy.THROW };
+    const config = { styles };
 
     const factory = bemNamesFactory('block', config);
 
