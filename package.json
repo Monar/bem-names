@@ -1,7 +1,7 @@
 {
   "name": "bem-names",
   "version": "0.7.0",
-  "description": "Advance generator of BEM-like class names",
+  "description": "Advanced generator of BEM-like class names",
   "main": "dist/index.js",
   "scripts": {
     "test": "mocha --compilers js:babel-register './test.js'",
@@ -41,6 +41,6 @@
     "classnames": "2.2.5",
     "eslint": "3.13.0",
     "mocha": "3.2.0",
-    "webpack": "2.2.0-rc.3"
+    "webpack": "2.2.0"
   }
 }

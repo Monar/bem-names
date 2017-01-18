@@ -69,7 +69,7 @@ module.exports =
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
@@ -280,9 +280,9 @@ function defaultParseModifier(config, bemName, modifier) {
   return bemName + config.separators.modifier + modifier;
 }
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
@@ -301,5 +301,5 @@ exports.StringModifiers = _bemNames.StringModifiers;
 exports.CssModulePolicy = _bemNames.CssModulePolicy;
 exports.default = _bemNames.bemNames;
 
-/***/ }
+/***/ })
 /******/ ]);

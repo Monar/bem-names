@@ -3,10 +3,9 @@
 [![Build Status](https://travis-ci.org/Monar/bem-names.svg?branch=master)](https://travis-ci.org/Monar/bem-names)
 [![npm version](https://badge.fury.io/js/bem-names.svg)](https://badge.fury.io/js/bem-names)
 
-Advance generator of bem-like class names. `bemNames` can follow any BEM naming
-convention and allow easy transition between any of them. It supports
-transition in and out from classic
-[classnames][classnames] as well as
+Advanced generator of bem-like class names. `bemNames` can follow any BEM
+naming convention and allow easy transition between any of them. It also
+supports the transition between classic [classnames][classnames] as well as
 [css-Modules](https://github.com/css-modules/css-modules).
 
 ## Install
@@ -18,12 +17,12 @@ npm install bem-names --save
 
 ## Basic usage
 
-The `bemNames` function takes any number of arguments which can be a string,
-array or object. First two arguments must be strings and they are threated as
-block and element names. Default configuration blocks usage of modifiers not
-wrapped with `[]` or `{}` to maintain clarity of what is a block or an element
-and what is a modifier. This and many other behaviours can be changed, check
-[advance usage](#advance-usage).
+The `bemNames` function takes any number of arguments, which can be a string,
+array or object. The first two arguments must be strings and are treated
+accordingly as the name of the block and the element. In the default
+configuration, the modifiers must be wrapped with `[]` or `{}`, in order to
+maintain clarity of what is a block, element or modifier.  This and many other
+behaviours can be changed, check [advanced usage](#advance-usage).
 
 ```js
 import bemNames from 'bem-names';
@@ -47,12 +46,12 @@ bem('element', ['mod']); // block__element block__element--mod
 bem('element', { mod2: true, mod3: false }); // 'block__element block__element--mod2'
 ```
 
-Check [advance usage](#advance-usage)
+Check [advanced usage](#advanced-usage)
 
 ## Motivation
 
-When I tried to add component from [npm](https://www.npmjs.com/) to project
-following one of BEM-naming conventions I've encounter two obstacles:
+When I tried to add a BEM-like styled component from the [npm](https://www.npmjs.com/) to project
+with different BEM-naming conventions I've encounter two obstacles:
 
 * There was a class name collision with existing components
 * The component followed different class naming convention, and did not fit
@@ -61,8 +60,8 @@ following one of BEM-naming conventions I've encounter two obstacles:
 
 Ideal solution would be if the component had an option to pass a class name
 generator (same way I'm  working in the mentioned project). Unfortunately this
-was not the case, so I've decided to change it. First step write such flexible
-generator, with option to apply
+was not the case, so I've decided to change it. My first step was writing such
+a flexible generator, with option to use
 [css-modules](https://github.com/css-modules/css-modules) in the near future.
 
 
@@ -70,9 +69,9 @@ Done :D
 
 ### Other projects
 
-There are many great generators of BEM-like class names. But neither of them
-can be applied as such generic generator covering various conventions. Below
-are few  project I've tested.
+There are many great generators of BEM-like class names. But none of them can
+be used as a generic generator covering various conventions. Below are several
+projects I've tested.
 
 * **[bem-classname](https://www.npmjs.com/package/bem-classname)** Very basic
 generator covering single convention.
@@ -82,20 +81,20 @@ generator covering single convention with troublesome need of setting up
 configuration for every component. The slowest of presented here.
 
 * **[b_](https://www.npmjs.com/package/b_)** Very fast generator allowing basic
-configuration but limited to two BEM variations.
+configuration but limited in BEM-flexibility.
 
 * **[bem-cn](https://www.npmjs.com/package/bem-cn)** Versatile BEM class name
 generator. Does not have flexible API allowing to apply other conventions.
 Personally prefer API similar to "classic" [classnames][classnames].
 
 * **[classnames](https://www.npmjs.com/package/bem-cn)** Good class name
-generator but with no support for BEM. :]
+generator but without support form BEM-like naming convention. :]
 
 ### Performance
 I've performed some performance tests. Each packaged received same parameters,
 and bemNames was configured to match output for each of the packages.
 
-*Implementation with De-duplication was about 18% slower.*
+*Implementation with de-duplication was about 18% slower.*
 
 
 | |10K | bemNames |
@@ -107,7 +106,7 @@ and bemNames was configured to match output for each of the packages.
 |classnames      | 3ms   | 7ms  |
 
 
-## Advance usage
+## Advanced usage
 
 `bemNames` was create with castomization in mind. Configuration object is
 merged with the default configuration so there is no need to specify all of the
@@ -124,7 +123,8 @@ const config = {
 customBemNames(config, 'block', 'element', ['mod1']); // 'block-element is-mod1'
 ```
 
-The `customBemNames` is created for in-line usage, for more generic approuch there is `bemNamesFactory`.
+The `customBemNames` is created for in-line usage, for more generic approuch
+there is `bemNamesFactory`.
 
 ```js
 import { bemNamesFactory } from 'bem-names';
@@ -145,102 +145,107 @@ bem('element', ['mod1']); // 'block-element is-mod1'
 const defaultConfig = {
 
   /**
-  * Treat first string as block and a second one as modifier.
-  * eg. cbn({ bemLike: false}, block, element, ['mod']) // funny and makes no sense
+  * When set to false generator will behave
+  * like "classic" classnames, also will not use these configuration options::
+  * seperators, states, keyValue, stringModifiers, parseModifier.
   */
   bemLike: true,
 
   separators: { element: '__', modifier: '--', keyValue: '-' },
 
+  /**
+  * This configuration option is handled in the default parseModifier. If
+  * a modifier will match a key from this object, then instead returning
+  * bemName conjuction with modifier, the parser will return appropriate value.
+  */
   states: {},
 
   joinWith: ' ',
 
+  /**
+  * When set to true, modifiers from objects will be combined with its
+  * values, unless value is type of boolean.
+  */
   keyValue: false,
 
+  /**
+  * This defines how to handle modifiers not wrap with [] or {}.
+  */
   stringModifiers: StringModifiers.WARN,
 
-  parseModifier: defaultParseModifier, // (config:object, bemName:str, modifier:str) => string
+  /**
+  * This function is generating modifier strings. The default implementation is
+  * replaces modifiers with values from states and if modifier is not defined
+  * in states object then returns bemName joined with the modifier.
+  *
+  * (config:object, bemName:str, modifier:str) => string
+  */
+  parseModifier: defaultParseModifier,
 
+  /**
+  * This configuration option allows to apply css-modules, just set here object
+  * import from styles file.
+  */
   styles: undefined,
 
+  /**
+  * Determines what to do when given modifer is missing in styles definitions.
+  */
   stylesPolicy: StylesPolicy.WARN,
 };
 ```
 
-#### Enumerators (current state)
 ```js
 export const StringModifiers = {
-  THROW: 'throw',
+
+  /**
+  * Prints warning and ignores modifiers not wrapped with [] or {}.
+  */
   WARN: 'warn',
+
+  /**
+  * Allows modifiers not wrapped with [] or {}.
+  */
   ALLOW: 'allow',
-  PASS_THROUGH: 'passThrough', // string values are not parsed and just joint at the end
+
+  /**
+  * Modifiers not wrapped with [] or {} are not parsed and are joined at the end of
+  * the generated string.
+  */
+  PASS_THROUGH: 'passThrough',
 };
 ```
 
 ```js
 export const StylesPolicy = {
-  THROW: 'throw',
+
+  /**
+  * Prints warning for missing class name definitios in style objects.
+  */
   WARN: 'warn',
+
+  /**
+  * Ignores class names not defined in style objects.
+  */
   IGNORE: 'ignore',
 };
 
 ```
 
-#### Preferred approach
+### Sample configurations
+
+#### emulate classNames like behaviour
 
 ```js
-import { bemNamesFactory } from 'bem-names';
+import { customBemNames } from 'bem-names';
 
-const bem = bemNamesFactory('block');
+const cn = (...args) => customBemNames({ bemLike: false }, ...args);
 
-bem('element');
-// 'block__element block__element'
-
-bem('element', { mod1: true });
-// 'block__element block__element--mod1'
-```
-
-##### Advance usage
-
-```js
-import { bemNamesFactory } from 'bem-names';
-
-const config = {
-  separators = { element: '-' },
-  states = { mod1: 'is-mod1' },
-};
-
-const bem = bemNamesFactory('block', config);
-
-bem('element');
-// 'block-element'
-
-bem('element', { mod1: true });
-// 'block-element is-mod1'
-```
-
-#### Configuration samples
-
-##### emulate classNames like behaviour
-
-```js
-import { bemNamesFactory, StringModifiers } from 'bem-names';
-
-const config = {
-  stringModifiers: StringModifiers.ALLOW,
-  bemLike: false,
-  parseModifier: (c, n, m) => m,
-};
-
-const cn = (...args) => customBemNames(config, ...args);
-
-cn('block', 'element', { mod1: true, mod2: false }, ['mod3'], 'mod4');
-// 'block element mod1 mod3 mod4'
+cn(['block', 'element'], { mod1: false }, ['mod2'], 'mod3'); // 'block element mod2 mod3'
 
 ```
 
-##### bem with regular classes
+#### BEM with regular classes
 
 ```js
 import { bemNamesFactory, StringModifiers } from 'bem-names';
@@ -249,14 +254,15 @@ const config = {
   stringModifiers: StringModifiers.PASS_THROUGH,
 };
 
-const cn = (...args) => customBemNames(config, ...args);
+const bem = bemNamesFactory('block', config);
 
-cn('block', 'element', { mod1: true, mod2: false }, 'mod3');
-// 'block__element block__element--mod1 mod3'
+bem('element', { mod1: true }, 'mod3'); // 'block__element block__element--mod1 mod3'
+bem('element', 'mod3'); // 'block__element mod3'
+bem('hmmm'); // 'block__hmmm'
 
 ```
 
-##### bem with states
+#### BEM with states
 
 ```js
 import { bemNamesFactory } from 'bem-names';
@@ -265,14 +271,13 @@ const config = {
   states = { disabled: 'is-disable', values: 'has-values' },
 };
 
-const cn = (...args) => customBemNames(config, ...args);
+const bem = bemNamesFactory('block', config);
 
-cn('block', { disabled: true, mod: true });
-// 'block is-disabled block--mod'
+bem({ disabled: true, mod: true }); // 'block is-disabled block--mod'
 
 ```
 
-##### bem with keyValues
+#### BEM with keyValues
 
 ```js
 import { bemNamesFactory } from 'bem-names';
@@ -281,30 +286,27 @@ const config = {
   keyValue = true,
 };
 
-const cn = (...args) => customBemNames(config, ...args);
+const bem = bemNamesFactory('block', config);
 
-cn('block', { disabled: true, mod: false, key: 'value' });
-// 'block block--disabled block--key-value'
+bem({ disabled: true, mod: false, key: 'value' }); // 'block block--disabled block--key-value'
 
 ```
 
-#####  css-modules
+####  css-modules
 
 ```js
-import { bemNamesFactory, StylesPolicy } from 'bem-names';
+import { bemNamesFactory } from 'bem-names';
 
 const config = {
   styles: { block: '123', 'block--disabled': 234 },
 };
 
-const cn = (...args) => customBemNames(config, ...args);
+const bem = bemNamesFactory('block', config);
 
-cn('block', { disabled: true, mod: false });
-// '123 234'
+cn('block', { disabled: true, mod: false }); // '123 234'
 
-cn('block', { disabled: true, key: 'value' });
+cn('block', { disabled: true, key: 'value' }); // '123 234'
 // console: 'Key "key" is missing in styles'
-// '123 234'
 
 ```
 
