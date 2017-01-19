@@ -22,7 +22,7 @@ array or object. The first two arguments must be strings and are treated
 accordingly as the name of the block and the element. In the default
 configuration, the modifiers must be wrapped with `[]` or `{}`, in order to
 maintain clarity of what is a block, element or modifier.  This and many other
-behaviours can be changed, check [advanced usage](#advance-usage).
+behaviours can be changed, check [advanced usage](#advanced-usage).
 
 ```js
 import bemNames from 'bem-names';
@@ -45,8 +45,6 @@ bem(['mod']); // block block--mod
 bem('element', ['mod']); // block__element block__element--mod
 bem('element', { mod2: true, mod3: false }); // 'block__element block__element--mod2'
 ```
-
-Check [advanced usage](#advanced-usage)
 
 ## Motivation
 
