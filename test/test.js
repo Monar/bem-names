@@ -22,10 +22,10 @@ describe('extractModifier', function() {
     assert.isFunction(fn);
   });
 
-  it('should throw for incorrect type', () => {
+  it('should not throw for incorrect type, print error', () => {
     const extract = extractModifiers(defaultConfig);
     const fn = () => extract([], null);
-    assert.throws(fn, TypeError);
+    assert.doesNotThrow(fn, TypeError);
   });
 
   it('should not throw for string, but print to console', () => {
@@ -189,14 +189,16 @@ describe('defaultParseModifier', function() {
 
 describe('applyStyles', function() {
 
-  it('should throw for unknown stylesPolicy', () => {
+  it('should ignore for unknown stylesPolicy, print warning', () => {
     const toJoin = ['block', 'block--super'];
     const styles = { block: 'xxx' };
     const stylesPolicy = 'laskdjfasdlkfjasdf';
 
-    const fn = () => applyStyles(toJoin, styles, stylesPolicy);
+    let result;
+    const fn = () => { result = applyStyles(toJoin, styles, stylesPolicy); };
 
-    assert.throws(fn, Error);
+    assert.doesNotThrow(fn, Error);
+    assert.deepEqual(result, ['xxx']);
   });
 
   it('should ignore missing styles', () => {
@@ -219,15 +221,6 @@ describe('applyStyles', function() {
     assert.deepEqual(result, ['xxx']);
   });
 
-  it('should throw for missing styles', () => {
-    const toJoin = ['block', 'block--super'];
-    const styles = { block: 'xxx' };
-    const stylesPolicy = StringModifiers.THROW;
-
-    const fn = () => applyStyles(toJoin, styles, stylesPolicy);
-
-    assert.throws(fn, Error);
-  });
 });
 
 describe('applyMods', function() {
@@ -307,19 +300,6 @@ describe('applyMods', function() {
 
     assert.doesNotThrow(fn, Error, 'does not throws');
     assert.equal(result, '', 'omits ok');
-  });
-
-  it('should throw when missing key in styles', () => {
-    const bemNames = 'block';
-    const modifiers = [{ 'super': true, ok: true }];
-    const config = {
-      ...defaultConfig,
-      styles: { block: '123', 'block--super': '234' },
-      stylesPolicy: StylesPolicy.THROW,
-    };
-    const fn = () => applyMods(config, bemNames, modifiers);
-
-    assert.throws(fn, Error);
   });
 
   it('should not throw and omit modifier and print to console', () => {
@@ -512,9 +492,9 @@ describe('bemNamesFactory', function() {
     assert.isFunction(result);
   });
 
-  it('should throw TypeError when no block provided', () => {
+  it('should not throw TypeError when block not string, print error', () => {
     const fn = () => bemNamesFactory();
-    assert.throws(fn, TypeError);
+    assert.doesNotThrow(fn, TypeError);
   });
 
   it('should work like (...args) => bemNames(block, ...args)', () => {

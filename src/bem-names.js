@@ -37,7 +37,7 @@ export function bemNamesFactory(block, customConfig={}){
   };
 
   if (config.bemLike && !isString(block)) {
-    throw TypeError(`block name: "${block}" is not a string`);
+    console.error(`block name: "${block}" is not a string`);
   }
 
   return (...args) => customBemNamesInner(config, block, args);
@@ -101,28 +101,24 @@ export function applyMods(config, bemName, modifiers) {
 
 
 export function applyStyles(toJoin, styles, stylesPolicy) {
-  let fn = undefined;
-
-  switch(stylesPolicy) {
-    case StylesPolicy.IGNORE:
-      fn = (acc, key) => key in styles ? acc.push(styles[key]) && acc : acc;
-      break;
-
-    case StylesPolicy.WARN:
-      fn = (acc, key) => {
-        if(key in styles) {
-          acc.push(styles[key]);
-        } else {
-          console.warn(`Key ${key} is missing in styles`);
-        }
-        return acc;
-      };
-      break;
-
-    default:
-      throw new Error(`StylePolicy: "${stylesPolicy}" has invalid value`);
+  if ( stylesPolicy === StylesPolicy.WARN) {
+    const fn = (acc, key) => {
+      if(key in styles) {
+        acc.push(styles[key]);
+      } else if (process.env.NODE_ENV !== 'production'){
+        console.warn(`Key ${key} is missing in styles`);
+      }
+      return acc;
+    };
+    return toJoin.reduce(fn, []);
   }
 
+  const stylePolicyIsWarn = stylesPolicy !== StylesPolicy.WARN;
+  if (stylePolicyIsWarn && process.env.NODE_ENV !== 'production') {
+    console.warn(`StylePolicy: "${stylesPolicy}" has invalid value`);
+  }
+
+  const fn = (acc, key) => key in styles ? acc.push(styles[key]) && acc : acc;
   return toJoin.reduce(fn, []);
 }
 
@@ -134,7 +130,7 @@ export function extractModifiers(config) {
       return extracted.concat(modifiers);
     }
 
-    if (typeof modifiers == 'object') {
+    if (typeof modifiers == 'object' && modifiers !== null) {
       let objecExtrac = (k) => !!modifiers[k] && (extracted.push(k));
 
       if (config.bemLike && config.keyValue) {
@@ -152,7 +148,8 @@ export function extractModifiers(config) {
       return extracted;
     }
 
-    if (config.bemLike && config.stringModifiers == StringModifiers.WARN) {
+    const strWarn = config.stringModifiers == StringModifiers.WARN;
+    if (config.bemLike && strWarn && process.env.NODE_ENV !== 'production' ) {
       console.warn(`Provided modifier "${modifiers}" is now allowed!`);
       return extracted;
     }
