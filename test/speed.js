@@ -4,7 +4,7 @@ const bemCN  = require('bem-cn');
 const classNames  = require('classnames');
 const bemClassname  = require('bem-classname');
 const bemClassnames  = require('bem-classnames');
-const dist = require('./dist');
+const dist = require('../lib');
 
 const runCount = 10 * 1000;
 

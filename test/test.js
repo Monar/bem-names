@@ -12,7 +12,7 @@ import {
   applyMods,
   applyStyles,
   bemNames,
-} from './bem-names';
+} from '../src/bem-names';
 
 
 describe('extractModifier', function() {
