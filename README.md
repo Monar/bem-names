@@ -5,7 +5,7 @@
 
 Advanced generator of bem-like class names. `bemNames` can follow any BEM
 naming convention and allow easy transition between any of them. It also
-supports the transition between classic [classnames][classnames] as well as
+supports a transition between classic [classnames][classnames] as well as
 [css-Modules](https://github.com/css-modules/css-modules).
 
 ## Install

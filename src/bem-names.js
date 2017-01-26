@@ -1,3 +1,9 @@
+/*
+  Copyright (C) 2016 Piotr Tomasz Monarski.
+  Licensed under the MIT License (MIT), see
+  https://github.com/Monar/bem-names
+*/
+
 export const StringModifiers = {
   WARN: 'warn',
   ALLOW: 'allow',
