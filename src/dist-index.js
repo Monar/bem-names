@@ -2,18 +2,14 @@ import {
   bemNames,
   customBemNames,
   bemNamesFactory,
-  StringModifiers,
-  StylesPolicy,
+  StringModifiers as bemNamesStringModifiers,
+  StylesPolicy as bemNamesStylePolicy,
 } from './bem-names';
-
-const bemNamesEnums = {
-  StringModifiers,
-  StylesPolicy,
-};
 
 export {
   bemNames,
   customBemNames,
   bemNamesFactory,
-  bemNamesEnums,
+  bemNamesStringModifiers,
+  bemNamesStylePolicy,
 };

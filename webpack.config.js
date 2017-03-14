@@ -1,14 +1,14 @@
 const webpack = require('webpack');
 
 module.exports = [{
-  entry: './lib/index.js',
+  entry: './lib/dist-index.js',
   output: {
     libraryTarget: 'this',
     filename: 'bem-names.js',
     path: './dist',
   },
 }, {
-  entry: './lib/index.js',
+  entry: './lib/dist-index.js',
   output: {
     libraryTarget: 'this',
     filename: 'bem-names.min.js',

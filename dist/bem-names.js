@@ -479,16 +479,19 @@ process.umask = function() { return 0; };
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.StylesPolicy = exports.StringModifiers = exports.bemNamesFactory = exports.customBemNames = exports.bemNames = undefined;
+exports.bemNamesEnums = exports.bemNamesFactory = exports.customBemNames = exports.bemNames = undefined;
 
 var _bemNames = __webpack_require__(0);
+
+var bemNamesEnums = {
+  StringModifiers: _bemNames.StringModifiers,
+  StylesPolicy: _bemNames.StylesPolicy
+};
 
 exports.bemNames = _bemNames.bemNames;
 exports.customBemNames = _bemNames.customBemNames;
 exports.bemNamesFactory = _bemNames.bemNamesFactory;
-exports.StringModifiers = _bemNames.StringModifiers;
-exports.StylesPolicy = _bemNames.StylesPolicy;
-exports.default = _bemNames.bemNames;
+exports.bemNamesEnums = bemNamesEnums;
 
 /***/ })
 /******/ ])));
