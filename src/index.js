@@ -3,7 +3,7 @@ import {
   customBemNames,
   bemNamesFactory,
   StringModifiers,
-  CssModulePolicy,
+  StylesPolicy,
 } from './bem-names';
 
 export {
@@ -11,7 +11,7 @@ export {
   customBemNames,
   bemNamesFactory,
   StringModifiers,
-  CssModulePolicy,
+  StylesPolicy,
 };
 
 export default bemNames;

@@ -1,3 +1,11 @@
+### 1.1.2
+
+* FIX: deprecated `CssModulePolicy` was exported instead of `StylePolicy`.
+
+### 1.1.1
+
+* update license header in files
+
 ### 1.1.0
 
 * Drops webpack, now package is properly optimized with other build process.
