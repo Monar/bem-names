@@ -11,9 +11,16 @@ const bemNamesEnums = {
   StylesPolicy,
 };
 
+bemNames.factory = bemNamesFactory;
+bemNames.custom = customBemNames;
+bemNames.StringModifiers = StringModifiers;
+bemNames.StringModifiers = StringModifiers;
+
 export {
   bemNames,
   customBemNames,
   bemNamesFactory,
   bemNamesEnums,
 };
+
+export default bemNames;
