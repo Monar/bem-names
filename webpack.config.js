@@ -1,18 +1,19 @@
 const webpack = require('webpack');
+const path = require('path');
 
 module.exports = [{
   entry: './lib/dist-index.js',
   output: {
     libraryTarget: 'this',
     filename: 'bem-names.js',
-    path: './dist',
+    path: path.resolve(__dirname, 'dist'),
   },
 }, {
   entry: './lib/dist-index.js',
   output: {
     libraryTarget: 'this',
     filename: 'bem-names.min.js',
-    path: './dist',
+    path: path.resolve(__dirname, 'dist'),
   },
   plugins: [
     new webpack.DefinePlugin({
