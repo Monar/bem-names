@@ -14,7 +14,7 @@ const bemNamesEnums = {
 bemNames.factory = bemNamesFactory;
 bemNames.custom = customBemNames;
 bemNames.StringModifiers = StringModifiers;
-bemNames.StringModifiers = StringModifiers;
+bemNames.StylesPolicy = StylesPolicy;
 
 export {
   bemNames,

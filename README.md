@@ -14,6 +14,11 @@ supports a transition between classic [classnames][classnames] as well as
 yarn add bem-names
 npm install bem-names --save
 ```
+Or use it directly with [secondary api](#secondary-api)
+```html
+<script src="https://cdn.jsdelivr.net/npm/bem-names/dist/bem-names.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bem-names/dist/bem-names.js"></script>
+```
 
 ## Basic usage
 
@@ -27,9 +32,9 @@ behaviours can be changed, check [advanced usage](#advanced-usage).
 ```js
 import bemNames from 'bem-names';
 
-bemNames('block'); // block
-bemNames('block', ['mod']); // block block--mod
-bemNames('block', 'element', ['mod']); // block__element block__element--mod
+bemNames('block'); // 'block'
+bemNames('block', ['mod']); // 'block block--mod'
+bemNames('block', 'element', ['mod']); // 'block__element block__element--mod'
 bemNames('block', 'element', { mod2: true, mod3: false }); // 'block__element block__element--mod2'
 ```
 
@@ -40,30 +45,46 @@ import { bemNamesFactory } from 'bem-names';
 
 const bem = bemNamesFactory('block');
 
-bem(); // block
-bem(['mod']); // block block--mod
-bem('element', ['mod']); // block__element block__element--mod
+bem(); // 'block'
+bem(['mod']); // 'block block--mod'
+bem('element', ['mod']); // 'block__element block__element--mod'
 bem('element', { mod2: true, mod3: false }); // 'block__element block__element--mod2'
+```
+
+With secondary API:
+
+```js
+import bemNames from 'bem-names';
+
+const bem =  bemNames.factory(
+  'custom-block'
+  { stringModifiers: bemNames.StringModifiers.PASS_THROUGH },
+);
+
+bem(['blue'], 'extra-class'); //'custom-block custom-block--blue extra-class'
+
+bemNames.custom({ state: { blue: 'is-blue' } }, 'block', ['blue']); //'block is-blue'
 ```
 
 ## Motivation
 
-When I tried to add a BEM-like styled component from the [npm](https://www.npmjs.com/) to project
-with different BEM-naming conventions I've encounter two obstacles:
+When I tried to add a BEM-like styled component
+[react-select](https://www.npmjs.com/package/react-select) to project with
+different BEM-naming conventions I've encounter two obstacles:
 
 * There was a class name collision with existing components
 * The component followed different class naming convention, and did not fit
   with existing [scss](http://sass-lang.com/) helper functions.
 
+To work with these kind of components you need to accept their global namespace
+presents and/or wrap with dummy element just for styling.
 
 Ideal solution would be if the component had an option to pass a class name
-generator (same way I'm  working in the mentioned project). Unfortunately this
-was not the case, so I've decided to change it. My first step was writing such
-a flexible generator, with option to use
-[css-modules](https://github.com/css-modules/css-modules) in the near future.
+generator ([sample code][bemNames-react-select]), and this is where I've
+decided to start. My first step was writing this generator, with option to
+transitions to [css-modules](https://github.com/css-modules/css-modules) in the
+near future, and this is what this library is all about.
 
-
-Done :D
 
 ### Other projects
 
@@ -134,6 +155,25 @@ const config = {
 
 const bem = bemNamesFactory('block', config);
 
+bem('element', ['mod1']); // 'block-element is-mod1'
+```
+
+### Secondary API
+
+```js
+//bemNames.factory = bemNamesFactory;
+//bemNames.custom = customBemNames;
+//bemNames.StringModifiers = StringModifiers;
+//bemNames.StylesPolicy = StylesPolicy;
+
+const config = {
+  separators: { element: '-' },
+  states = { mod1: 'is-mod1' },
+};
+
+bemNames.custom(config, 'block', 'element', ['mod1']); // 'block-element is-mod1'
+
+const bem = bemNames.factory('block', config);
 bem('element', ['mod1']); // 'block-element is-mod1'
 ```
 
@@ -309,3 +349,4 @@ cn('block', { disabled: true, key: 'value' }); // '123 234'
 ```
 
 [classnames]: https://www.npmjs.com/package/classnames
+[bemNames-react-select]: https://github.com/Monar/react-select/commit/0f8983d02b26754a5bf1d45d8ea298500c663ecd
