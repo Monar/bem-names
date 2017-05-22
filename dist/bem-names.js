@@ -6,9 +6,9 @@
 /******/ 	function __webpack_require__(moduleId) {
 /******/
 /******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId])
+/******/ 		if(installedModules[moduleId]) {
 /******/ 			return installedModules[moduleId].exports;
-/******/
+/******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			i: moduleId,
@@ -68,6 +68,36 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.bemNamesEnums = exports.bemNamesFactory = exports.customBemNames = exports.bemNames = undefined;
+
+var _bemNames = __webpack_require__(1);
+
+var bemNamesEnums = {
+  StringModifiers: _bemNames.StringModifiers,
+  StylesPolicy: _bemNames.StylesPolicy
+};
+
+_bemNames.bemNames.factory = _bemNames.bemNamesFactory;
+_bemNames.bemNames.custom = _bemNames.customBemNames;
+_bemNames.bemNames.StringModifiers = _bemNames.StringModifiers;
+_bemNames.bemNames.StylesPolicy = _bemNames.StylesPolicy;
+
+exports.bemNames = _bemNames.bemNames;
+exports.customBemNames = _bemNames.customBemNames;
+exports.bemNamesFactory = _bemNames.bemNamesFactory;
+exports.bemNamesEnums = bemNamesEnums;
+exports.default = _bemNames.bemNames;
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -281,10 +311,30 @@ function defaultParseModifier(config, bemName, modifier) {
 
   return bemName + config.separators.modifier + modifier;
 }
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),
-/* 1 */
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _ = __webpack_require__(0);
+
+Object.defineProperty(exports, 'bemNames', {
+  enumerable: true,
+  get: function get() {
+    return _.bemNames;
+  }
+});
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -468,30 +518,6 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.bemNamesEnums = exports.bemNamesFactory = exports.customBemNames = exports.bemNames = undefined;
-
-var _bemNames = __webpack_require__(0);
-
-var bemNamesEnums = {
-  StringModifiers: _bemNames.StringModifiers,
-  StylesPolicy: _bemNames.StylesPolicy
-};
-
-exports.bemNames = _bemNames.bemNames;
-exports.customBemNames = _bemNames.customBemNames;
-exports.bemNamesFactory = _bemNames.bemNamesFactory;
-exports.bemNamesEnums = bemNamesEnums;
 
 /***/ })
 /******/ ])));

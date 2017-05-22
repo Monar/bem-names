@@ -1,3 +1,8 @@
+### 1.2.0
+
+* Add secondary API.
+* Bundle the library, and provide links via jsDelivery.
+
 ### 1.1.2
 
 * FIX: deprecated `CssModulePolicy` was exported instead of `StylePolicy`.
