@@ -1,3 +1,11 @@
+### 1.3.0
+
+* Update README.md
+* Update packages
+* Bundle the library as [UMD](https://github.com/umdjs/umd) with [rollup](https://github.com/rollup/rollup)
+* Clean and unify packages, those provided by npm are the same as those from cdn
+* FIX: remove undocumented `bemNamesEnums` and restore `StringModifiers` and `StylesPolicy`
+
 ### 1.2.0
 
 * Add secondary API.
