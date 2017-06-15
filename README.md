@@ -31,10 +31,14 @@ behaviours can be changed, check [advanced usage](#advanced-usage).
 ```js
 import bemNames from 'bem-names';
 
-bemNames('block'); // 'block'
-bemNames('block', ['mod']); // 'block block--mod'
-bemNames('block', 'element', ['mod']); // 'block__element block__element--mod'
-bemNames('block', 'element', { mod2: true, mod3: false }); // 'block__element block__element--mod2'
+bemNames('block');
+// 'block'
+bemNames('block', ['mod']);
+// 'block block--mod'
+bemNames('block', 'element', ['mod']);
+// 'block__element block__element--mod'
+bemNames('block', 'element', { mod2: true, mod3: false });
+// 'block__element block__element--mod2'
 ```
 
 With factory:
@@ -44,10 +48,14 @@ import { bemNamesFactory } from 'bem-names';
 
 const bem = bemNamesFactory('block');
 
-bem(); // 'block'
-bem(['mod']); // 'block block--mod'
-bem('element', ['mod']); // 'block__element block__element--mod'
-bem('element', { mod2: true, mod3: false }); // 'block__element block__element--mod2'
+bem();
+// 'block'
+bem(['mod']);
+// 'block block--mod'
+bem('element', ['mod']);
+// 'block__element block__element--mod'
+bem('element', { mod2: true, mod3: false });
+// 'block__element block__element--mod2'
 ```
 
 With [secondary API](#secondary-api):
@@ -56,13 +64,17 @@ With [secondary API](#secondary-api):
 import bemNames from 'bem-names';
 
 const bem =  bemNames.factory(
-  'custom-block'
+  'block'
   { stringModifiers: 'passThrough' },
 );
 
-bem(['blue'], 'extra-class'); //'custom-block custom-block--blue extra-class'
+bem(['blue'], 'extra-class');
+// 'block block--blue extra-class'
+```
 
-bemNames.custom({ state: { blue: 'is-blue' } }, 'block', ['blue']); //'block is-blue'
+```js
+bemNames.custom({ state: { blue: 'is-blue' } }, 'block', ['blue']);
+// 'block is-blue'
 ```
 
 ## Motivation
@@ -138,7 +150,8 @@ const config = {
   states = { mod1: 'is-mod1' },
 };
 
-customBemNames(config, 'block', 'element', ['mod1']); // 'block-element is-mod1'
+customBemNames(config, 'block', 'element', ['mod1']);
+// 'block-element is-mod1'
 ```
 
 The `customBemNames` is created for in-line usage, for more generic approuch
@@ -154,7 +167,8 @@ const config = {
 
 const bem = bemNamesFactory('block', config);
 
-bem('element', ['mod1']); // 'block-element is-mod1'
+bem('element', ['mod1']);
+// 'block-element is-mod1'
 ```
 
 ### Secondary API
@@ -170,10 +184,12 @@ const config = {
   states = { mod1: 'is-mod1' },
 };
 
-bemNames.custom(config, 'block', 'element', ['mod1']); // 'block-element is-mod1'
+bemNames.custom(config, 'block', 'element', ['mod1']);
+// 'block-element is-mod1'
 
 const bem = bemNames.factory('block', config);
-bem('element', ['mod1']); // 'block-element is-mod1'
+bem('element', ['mod1']);
+// 'block-element is-mod1'
 ```
 
 ### Config object
@@ -266,7 +282,6 @@ export const StylesPolicy = {
   */
   IGNORE: 'ignore',
 };
-
 ```
 
 ### Sample configurations
@@ -278,8 +293,8 @@ import { customBemNames } from 'bem-names';
 
 const cn = (...args) => customBemNames({ bemLike: false }, ...args);
 
-cn(['block', 'element'], { mod1: false }, ['mod2'], 'mod3'); // 'block element mod2 mod3'
-
+cn(['block', 'element'], { mod1: false }, ['mod2'], 'mod3');
+// 'block element mod2 mod3'
 ```
 
 #### BEM with regular classes
@@ -293,10 +308,12 @@ const config = {
 
 const bem = bemNamesFactory('block', config);
 
-bem('element', { mod1: true }, 'mod3'); // 'block__element block__element--mod1 mod3'
-bem('element', 'mod3'); // 'block__element mod3'
-bem('hmmm'); // 'block__hmmm'
-
+bem('element', { mod1: true }, 'mod3');
+// 'block__element block__element--mod1 mod3'
+bem('element', 'mod3');
+// 'block__element mod3'
+bem('hmmm');
+// 'block__hmmm'
 ```
 
 #### BEM with states
@@ -310,8 +327,8 @@ const config = {
 
 const bem = bemNamesFactory('block', config);
 
-bem({ disabled: true, mod: true }); // 'block is-disabled block--mod'
-
+bem({ disabled: true, mod: true });
+// 'block is-disabled block--mod'
 ```
 
 #### BEM with keyValues
@@ -325,8 +342,8 @@ const config = {
 
 const bem = bemNamesFactory('block', config);
 
-bem({ disabled: true, mod: false, key: 'value' }); // 'block block--disabled block--key-value'
-
+bem({ disabled: true, mod: false, key: 'value' });
+// 'block block--disabled block--key-value'
 ```
 
 ####  css-modules
@@ -340,11 +357,12 @@ const config = {
 
 const bem = bemNamesFactory('block', config);
 
-cn('block', { disabled: true, mod: false }); // '123 234'
+cn('block', { disabled: true, mod: false });
+// '123 234'
 
-cn('block', { disabled: true, key: 'value' }); // '123 234'
+cn('block', { disabled: true, key: 'value' });
+// '123 234'
 // console: 'Key "key" is missing in styles'
-
 ```
 
 [classnames]: https://www.npmjs.com/package/classnames
