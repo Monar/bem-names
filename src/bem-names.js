@@ -181,3 +181,5 @@ export function defaultParseModifier(config, bemName, modifier) {
 
   return bemName + config.separators.modifier + modifier;
 }
+
+export default bemNames;

@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
-import { assert } from 'chai';
-import {
+const { assert } = require('chai');
+const {
   defaultConfig,
   StringModifiers,
   StylesPolicy,
@@ -12,7 +12,7 @@ import {
   applyMods,
   applyStyles,
   bemNames,
-} from '../src/bem-names';
+} = require('../src/bem-names');
 
 
 describe('extractModifier', function() {

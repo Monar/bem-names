@@ -14,7 +14,6 @@ supports a transition between classic [classnames][classnames] as well as
 yarn add bem-names
 npm install bem-names --save
 ```
-Or use it directly with [secondary api](#secondary-api)
 ```html
 <script src="https://cdn.jsdelivr.net/npm/bem-names/dist/bem-names.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bem-names/dist/bem-names.js"></script>
@@ -51,14 +50,14 @@ bem('element', ['mod']); // 'block__element block__element--mod'
 bem('element', { mod2: true, mod3: false }); // 'block__element block__element--mod2'
 ```
 
-With secondary API:
+With [secondary API](#secondary-api):
 
 ```js
 import bemNames from 'bem-names';
 
 const bem =  bemNames.factory(
   'custom-block'
-  { stringModifiers: bemNames.StringModifiers.PASS_THROUGH },
+  { stringModifiers: 'passThrough' },
 );
 
 bem(['blue'], 'extra-class'); //'custom-block custom-block--blue extra-class'
@@ -120,8 +119,8 @@ and bemNames was configured to match output for each of the packages.
 |:-:|--:|:-:|
 |b_              | 2ms   | 12ms |
 |bem-classname   | 13ms  | 11ms  |
-|bem-classanmes  | 72ms  | 11ms  |
-|bem-cn          | 23ms  | 12ms  |
+|bem-classanmes  | 101ms | 13ms  |
+|bem-cn          | 23ms  | 26ms  |
 |classnames      | 3ms   | 7ms  |
 
 
