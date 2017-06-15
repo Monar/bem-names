@@ -1,3 +1,7 @@
+### 1.3.1
+
+* Change formatting of code snippets in README
+
 ### 1.3.0
 
 * Update README.md
