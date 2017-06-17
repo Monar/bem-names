@@ -1,3 +1,8 @@
+### 1.3.2
+
+* Add test coverage
+* Reduce number of tags
+
 ### 1.3.1
 
 * Change formatting of code snippets in README
