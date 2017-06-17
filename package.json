@@ -11,15 +11,9 @@
   },
   "keywords": [
     "bem",
-    "classname",
-    "classnames",
-    "react",
     "class",
-    "css",
-    "modules",
-    "bemNames",
-    "util",
-    "utility"
+    "classname",
+    "generator"
   ],
   "author": "Piotr Tomasz Monarski",
   "license": "MIT",
