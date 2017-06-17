@@ -1,8 +1,14 @@
 language: node_js
-node_js: 
+node_js:
   - node
 script:
-  - yarn 
-  - yarn test
+  - yarn
+  - yarn coverage
   - yarn lint
   - yarn build
+addons:
+  code_climate:
+    repo_token: 6c372963a0edc1fa5b338beda65f83710bf7fd4c9fb9cbf39395f6e4f23fdcac
+after_success:
+  - npm install -g codeclimate-test-reporter
+  - codeclimate-test-reporter < ./coverage/lcov.info
