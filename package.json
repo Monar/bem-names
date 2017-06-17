@@ -1,7 +1,7 @@
 {
   "name": "bem-names",
   "version": "1.3.2",
-  "description": "Advanced generator of BEM-like class names",
+  "description": "Advanced generator of BEM class names",
   "main": "dist/bem-names.js",
   "scripts": {
     "test": "NODE_ENV='test' mocha --compilers js:babel-register './test/test.js'",
@@ -12,9 +12,14 @@
   },
   "keywords": [
     "bem",
+    "names",
+    "generator",
     "class",
     "classname",
-    "generator"
+    "classnames",
+    "react",
+    "bemNames",
+    "css"
   ],
   "author": "Piotr Tomasz Monarski",
   "license": "MIT",

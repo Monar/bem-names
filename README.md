@@ -1,10 +1,10 @@
 # bemNames
 
-[![Build Status](https://travis-ci.org/Monar/bem-names.svg?branch=master)](https://travis-ci.org/Monar/bem-names)
 [![npm version](https://badge.fury.io/js/bem-names.svg)](https://badge.fury.io/js/bem-names)
+[![Build Status](https://travis-ci.org/Monar/bem-names.svg?branch=master)](https://travis-ci.org/Monar/bem-names)
 [![Test Coverage](https://codeclimate.com/github/Monar/bem-names/badges/coverage.svg)](https://codeclimate.com/github/Monar/bem-names/coverage)
 
-Advanced generator of bem-like class names. `bemNames` can follow any BEM
+Advanced generator of BEM class names. `bemNames` can follow any BEM
 naming convention and allow easy transition between any of them. It also
 supports a transition between classic [classnames][classnames] as well as
 [css-Modules](https://github.com/css-modules/css-modules).
