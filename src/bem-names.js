@@ -156,7 +156,7 @@ export function extractModifiers(config) {
 
     const strWarn = config.stringModifiers == StringModifiers.WARN;
     if (config.bemLike && strWarn && process.env.NODE_ENV !== 'production' ) {
-      console.warn(`Provided modifier "${modifiers}" is now allowed!`);
+      console.warn(`Provided modifier "${modifiers}" is not allowed!`);
       return extracted;
     }
 
