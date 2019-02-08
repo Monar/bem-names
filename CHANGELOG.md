@@ -1,3 +1,8 @@
+### 1.3.3
+
+* Fix typo in warning message #2 (@sirctseb)
+* Publish smaller package, by excluding tests and source code from bundle.
+
 ### 1.3.2
 
 * Add test coverage
